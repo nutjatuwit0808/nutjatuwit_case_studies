@@ -20,9 +20,12 @@ geospatial-comparison/
 │   ├── MapErrorOverlay.tsx   # Shared error overlay for maps
 │   ├── PerformanceMetrics.tsx # Metrics table and network simulation
 │   └── PMTilesMap.tsx        # Map component loading PMTiles
+├── hooks/
+│   └── useMapboxMap.ts       # Shared map setup: token check, init, error, cleanup
 ├── lib/
 │   ├── format.ts             # formatLoadTime, formatNumber
-│   └── map-config.ts         # MAP_STYLE, MAP_CENTER, MAP_ZOOM
+│   ├── map-config.ts         # MAP_STYLE, MAP_CENTER, MAP_ZOOM
+│   └── metrics-helpers.ts    # computeMetricDiff, computeLoadTimeByNetwork, NETWORK_SPEEDS
 ├── public/
 │   └── data/
 │       ├── sample.geojson

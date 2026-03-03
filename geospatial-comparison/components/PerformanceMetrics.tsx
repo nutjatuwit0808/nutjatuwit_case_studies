@@ -2,19 +2,17 @@
 
 import type { MapMetrics } from "@/types/map";
 import { formatLoadTime, formatNumber } from "@/lib/format";
+import {
+  computeMetricDiff,
+  computeLoadTimeByNetwork,
+  computeNetworkSpeedDiffPercent,
+  NETWORK_SPEEDS,
+} from "@/lib/metrics-helpers";
 
 interface PerformanceMetricsProps {
   geojsonMetrics: MapMetrics | null;
   pmtilesMetrics: MapMetrics | null;
 }
-
-/** Network speeds in Mbps → MB/s */
-const NETWORK_SPEEDS = [
-  { label: "3G ช้า (1 Mbps)", mbps: 1 },
-  { label: "3G (3 Mbps)", mbps: 3 },
-  { label: "4G (10 Mbps)", mbps: 10 },
-  { label: "WiFi (50 Mbps)", mbps: 50 },
-] as const;
 
 function MetricRow({
   label,
@@ -31,28 +29,12 @@ function MetricRow({
   decimals?: number;
   lowerIsBetter?: boolean;
 }) {
-  const diff = pmtilesValue - geojsonValue;
-  const diffPercent =
-    geojsonValue > 0 ? ((diff / geojsonValue) * 100).toFixed(1) : "—";
-  const winner =
-    diff === 0
-      ? "draw"
-      : lowerIsBetter
-        ? diff < 0
-          ? "pmtiles"
-          : "geojson"
-        : diff > 0
-          ? "pmtiles"
-          : "geojson";
-
-  const diffText =
-    winner === "draw"
-      ? "—"
-      : lowerIsBetter && diff !== 0
-        ? diff < 0
-          ? `เร็วขึ้น ${Math.abs(diff).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${unit} (${Math.abs(parseFloat(diffPercent)).toFixed(0)}%)`
-          : `ช้าลง ${Math.abs(diff).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${unit} (${diffPercent}%)`
-        : `${diff > 0 ? "+" : ""}${diffPercent}%`;
+  const { winner, diffText } = computeMetricDiff(
+    geojsonValue,
+    pmtilesValue,
+    lowerIsBetter,
+    unit
+  );
 
   return (
     <tr className="border-b border-zinc-200 dark:border-zinc-700">
@@ -82,6 +64,25 @@ function MetricRow({
   );
 }
 
+/** คำนวณสรุปความเร็ว (PMTiles vs GeoJSON) — ใช้ threshold 10% เพื่อตัดสิน draw */
+function getSpeedSummary(
+  geojsonLoadTimeMs: number,
+  pmtilesLoadTimeMs: number
+): string | null {
+  const loadTimeRatio =
+    pmtilesLoadTimeMs > 0 ? geojsonLoadTimeMs / pmtilesLoadTimeMs : 0;
+  const pmtilesFaster = loadTimeRatio > 1.1;
+  const geojsonFaster = loadTimeRatio < 0.9;
+
+  if (pmtilesFaster) {
+    return `PMTiles เร็วกว่า GeoJSON ${loadTimeRatio.toFixed(1)} เท่า`;
+  }
+  if (geojsonFaster) {
+    return `GeoJSON เร็วกว่า PMTiles ${(1 / loadTimeRatio).toFixed(1)} เท่า`;
+  }
+  return null;
+}
+
 export function PerformanceMetrics({
   geojsonMetrics,
   pmtilesMetrics,
@@ -98,17 +99,13 @@ export function PerformanceMetrics({
     );
   }
 
-  const loadTimeRatio =
-    pmtilesMetrics.loadTimeMs > 0
-      ? geojsonMetrics.loadTimeMs / pmtilesMetrics.loadTimeMs
-      : 0;
-  const pmtilesFaster = loadTimeRatio > 1.1;
-  const geojsonFaster = loadTimeRatio < 0.9;
-  const speedSummary = pmtilesFaster
-    ? `PMTiles เร็วกว่า GeoJSON ${loadTimeRatio.toFixed(1)} เท่า`
-    : geojsonFaster
-      ? `GeoJSON เร็วกว่า PMTiles ${(1 / loadTimeRatio).toFixed(1)} เท่า`
-      : null;
+  const speedSummary = getSpeedSummary(
+    geojsonMetrics.loadTimeMs,
+    pmtilesMetrics.loadTimeMs
+  );
+  const pmtilesFaster =
+    pmtilesMetrics.loadTimeMs > 0 &&
+    geojsonMetrics.loadTimeMs / pmtilesMetrics.loadTimeMs > 1.1;
 
   return (
     <div className="space-y-4">
@@ -192,7 +189,9 @@ export function PerformanceMetrics({
                   GeoJSON ({geojsonMetrics.fileSizeKb.toFixed(0)} KB)
                 </th>
                 <th className="py-2 px-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">
-                  PMTiles (~{Math.round(pmtilesMetrics.fileSizeKb * 0.15).toLocaleString()} KB viewport)
+                  PMTiles (~
+                  {Math.round(pmtilesMetrics.fileSizeKb * 0.15).toLocaleString()}{" "}
+                  KB viewport)
                 </th>
                 <th className="py-2 px-4 text-right font-semibold text-zinc-700 dark:text-zinc-300">
                   ผลต่าง (%)
@@ -201,16 +200,20 @@ export function PerformanceMetrics({
             </thead>
             <tbody className="bg-white dark:bg-zinc-900">
               {NETWORK_SPEEDS.map(({ label, mbps }) => {
-                const geojsonMb = geojsonMetrics.fileSizeKb / 1024;
+                const geojsonSec = computeLoadTimeByNetwork(
+                  geojsonMetrics.fileSizeKb,
+                  mbps
+                );
                 const pmtilesViewportKb = pmtilesMetrics.fileSizeKb * 0.15;
-                const pmtilesMb = pmtilesViewportKb / 1024;
-                const mbPerSec = mbps / 8;
-                const geojsonSec = geojsonMb / mbPerSec;
-                const pmtilesSec = pmtilesMb / mbPerSec;
-                const diffPercent =
-                  geojsonSec > 0
-                    ? ((geojsonSec - pmtilesSec) / geojsonSec) * 100
-                    : 0;
+                const pmtilesSec = computeLoadTimeByNetwork(
+                  pmtilesViewportKb,
+                  mbps
+                );
+                const diffPercent = computeNetworkSpeedDiffPercent(
+                  geojsonMetrics.fileSizeKb,
+                  pmtilesMetrics.fileSizeKb,
+                  mbps
+                );
                 return (
                   <tr
                     key={mbps}

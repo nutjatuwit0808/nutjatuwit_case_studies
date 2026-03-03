@@ -13,19 +13,25 @@ This repository serves as a deep dive into my technical problem-solving process.
 
 Here is a curated list of architectural challenges and optimizations I have engineered:
 
-### 1. [Locable: Geospatial Performance Optimization](./01-locable-performance-opt)
-**Domain:** GIS / Geospatial Data Management Platform
-* **The Solution:** Bypassed the database entirely by refactoring the data-fetching logic. Pre-processed geospatial points and served them directly via static `.geojson` files.
+### 1. [Geospatial Comparison](./geospatial-comparison)
+**Domain:** GIS / Geospatial Web Performance
+**คำอธิบาย:** เปรียบเทียบ performance การโหลดแผนที่ระหว่าง GeoJSON และ PMTiles บน Mapbox GL JS แบบ side-by-side พร้อม metrics (load time, file size, time to first paint) และการประมาณเวลาโหลดตามความเร็วเครือข่าย (3G/4G/WiFi)
+**Tech:** Next.js 16, React 19, Mapbox GL JS, mapbox-pmtiles, Tailwind CSS 4, GeoJSON, PMTiles
+
+### 2. [Geospatial Data Pipeline](./geospatial-data-pipeline)
+**Domain:** GIS / Data Pipeline
+**คำอธิบาย:** Pipeline สำหรับสร้างข้อมูลอสังหาริมทรัพย์จำลอง 10,000 จุดทั่วประเทศไทย และแปลง GeoJSON เป็น PMTiles ด้วย tippecanoe เพื่อใช้ร่วมกับ geospatial-comparison
+**Tech:** Python, GeoPandas, pandas, numpy, pyarrow, tippecanoe, GeoJSON, PMTiles
 
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
 
-* **Languages:** JavaScript (ES6+), TypeScript, Java, Python
-* **Frontend:** React.js, Next.js, Zustand, Mapbox
-* **Backend:** Node.js, NestJS, Spring Boot
-* **Performance & AI:** k6 (Load Testing), RAG concepts, Vector Databases
-* **Data Processing:** GeoJSON manipulation, Database optimization
+* **Languages:** JavaScript (ES6+), TypeScript, Python
+* **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS
+* **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe
+* **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
+* **Backend:** Node.js, Next.js API Routes
 
 ---
 
