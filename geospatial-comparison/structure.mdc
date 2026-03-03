@@ -1,0 +1,49 @@
+# Geospatial Comparison - Project Structure
+
+## Overview
+
+Next.js app comparing GeoJSON vs PMTiles map loading performance on Mapbox GL JS.
+
+## Directory Structure
+
+```
+geospatial-comparison/
+├── app/
+│   ├── api/pmtiles/[filename]/route.ts   # PMTiles range-request API
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── GeoJSONMap.tsx        # Map component loading GeoJSON
+│   ├── MapCard.tsx           # Reusable card wrapper for map + metrics
+│   ├── MapComparison.tsx     # Main comparison layout
+│   ├── MapErrorOverlay.tsx   # Shared error overlay for maps
+│   ├── PerformanceMetrics.tsx # Metrics table and network simulation
+│   └── PMTilesMap.tsx        # Map component loading PMTiles
+├── lib/
+│   ├── format.ts             # formatLoadTime, formatNumber
+│   └── map-config.ts         # MAP_STYLE, MAP_CENTER, MAP_ZOOM
+├── public/
+│   └── data/
+│       ├── sample.geojson
+│       └── sample.pmtiles
+├── types/
+│   ├── map.ts                # MapMetrics interface
+│   └── mapbox-pmtiles.d.ts
+└── structure.mdc
+```
+
+## Key Dependencies
+
+- **mapbox-gl**: Map rendering
+- **mapbox-pmtiles**: PMTiles source for Mapbox GL
+
+## Data Flow
+
+```
+MapComparison
+├── PerformanceMetrics (geojsonMetrics, pmtilesMetrics)
+└── MapCard × 2
+    ├── GeoJSONMap → setGeojsonMetrics
+    └── PMTilesMap → setPmtilesMetrics
+```
