@@ -20,7 +20,7 @@ Here is a curated list of architectural challenges and optimizations I have engi
 
 ### 2. [Geospatial Data Pipeline](./geospatial-data-pipeline)
 **Domain:** GIS / Data Pipeline
-**คำอธิบาย:** Pipeline สำหรับสร้างข้อมูลอสังหาริมทรัพย์จำลอง 10,000 จุดทั่วประเทศไทย และแปลง GeoJSON เป็น PMTiles ด้วย tippecanoe เพื่อใช้ร่วมกับ geospatial-comparison
+**คำอธิบาย:** Pipeline สำหรับสร้างข้อมูลอสังหาริมทรัพย์จำลอง 100,000 จุดทั่วประเทศไทย และแปลง GeoJSON เป็น PMTiles ด้วย tippecanoe เพื่อใช้ร่วมกับ geospatial-comparison
 **Tech:** Python, GeoPandas, pandas, numpy, pyarrow, tippecanoe, GeoJSON, PMTiles
 
 ---
