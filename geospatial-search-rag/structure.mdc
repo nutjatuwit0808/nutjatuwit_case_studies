@@ -1,0 +1,63 @@
+# Geospatial Search RAG - Project Structure
+
+## Overview
+
+Next.js app สำหรับค้นหาสถานที่ด้วย Semantic Search และ RAG (Retrieval-Augmented Generation) ใช้ PostgreSQL + PostGIS + pgvector บน Supabase ร่วมกับ Google Gemini และ Mapbox
+
+## Directory Structure
+
+```
+geospatial-search-rag/
+├── app/
+│   ├── api/
+│   │   ├── search/
+│   │   │   ├── debug/route.ts   # Debug endpoint สำหรับตรวจสอบ geocode, venue count
+│   │   │   └── rag/route.ts    # Semantic search + RAG response
+│   │   ├── seed/route.ts       # Seed venues พร้อม embedding
+│   │   └── venues/
+│   │       └── embed/route.ts  # Generate embedding สำหรับ venue(s)
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   ├── EmptyState.tsx         # Reusable empty state (icon + title + description)
+│   ├── MapErrorOverlay.tsx    # Error overlay สำหรับแผนที่
+│   ├── RAGResponse.tsx        # แสดง RAG response และรายการสถานที่
+│   ├── SearchBar.tsx          # ช่องค้นหา + validation
+│   └── VenueMap.tsx           # Mapbox map + markers
+├── data/
+│   └── seed-venues.ts         # Mock venues สำหรับ seed
+├── hooks/
+│   └── useMapboxMap.ts        # Shared map setup: token, init, error, cleanup
+├── lib/
+│   ├── api-utils.ts           # getErrorMessage, jsonError
+│   ├── db.ts                  # Supabase client
+│   ├── embedding.ts           # embedText, embedDocument (Gemini)
+│   ├── geocode.ts             # geocode, resolveSearchCenter
+│   ├── geo-semantic.ts        # geoSemanticSearch RPC
+│   ├── map-config.ts          # MAP_STYLE, MAP_CENTER, DEFAULT_SEARCH_CENTER
+│   ├── markdown.tsx           # renderMarkdownBold
+│   ├── rag.ts                 # generateRagResponse
+│   ├── search-config.ts       # DEFAULT_RADIUS_METERS, MIN_SIMILARITY_THRESHOLD
+│   └── utils.ts               # escapeHtml, buildVenueTextForEmbedding
+├── supabase/
+│   └── migrations/            # SQL migrations
+├── types/
+│   └── venue.ts               # VenueSearchResult
+└── structure.mdc
+```
+
+## Key Dependencies
+
+- **mapbox-gl**: Map rendering
+- **@supabase/supabase-js**: Database + RPC
+- **@google/generative-ai**: Embedding + RAG (Gemini)
+
+## Data Flow
+
+```
+page.tsx (Home)
+├── SearchBar → handleSearch → POST /api/search/rag
+├── RAGResponse (venues, ragResponse)
+└── VenueMap (venues, flyToPoint) [dynamic import, ssr: false]
+```

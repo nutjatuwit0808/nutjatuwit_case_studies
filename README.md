@@ -23,13 +23,18 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** Pipeline สำหรับสร้างข้อมูลอสังหาริมทรัพย์จำลอง 100,000 จุดทั่วประเทศไทย และแปลง GeoJSON เป็น PMTiles ด้วย tippecanoe เพื่อใช้ร่วมกับ geospatial-comparison
 **Tech:** Python, GeoPandas, pandas, numpy, pyarrow, tippecanoe, GeoJSON, PMTiles
 
+### 3. [Geospatial Search RAG](./geospatial-search-rag)
+**Domain:** GIS / AI / RAG
+**คำอธิบาย:** ระบบค้นหาสถานที่ด้วย Semantic Search และ RAG ใช้ PostgreSQL + PostGIS + pgvector บน Supabase ร่วมกับ Google Gemini และ Mapbox Geocoding
+**Tech:** Next.js 16, React 19, Mapbox GL JS, Supabase, PostGIS, pgvector, Google Gemini, Tailwind CSS
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
 
 * **Languages:** JavaScript (ES6+), TypeScript, Python
 * **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS
-* **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe
+* **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe, PostGIS, pgvector
 * **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
 * **Backend:** Node.js, Next.js API Routes
 
