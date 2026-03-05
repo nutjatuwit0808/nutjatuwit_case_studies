@@ -28,6 +28,11 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** ระบบค้นหาสถานที่ด้วย Semantic Search และ RAG ใช้ PostgreSQL + PostGIS + pgvector บน Supabase ร่วมกับ Google Gemini และ Mapbox Geocoding
 **Tech:** Next.js 16, React 19, Mapbox GL JS, Supabase, PostGIS, pgvector, Google Gemini, Tailwind CSS
 
+### 4. [Geo-Stream: Real-time Anomaly Detection](./geospatial-realtime-anomaly-detection)
+**Domain:** GIS / Event-Driven / AI / Real-time
+**คำอธิบาย:** ระบบตรวจจับความผิดปกติของพิกัด GPS รถบรรทุกแบบ Real-time ด้วย Event-Driven Architecture (Kafka, Python AI, NestJS, Next.js + Mapbox)
+**Tech:** Python, Apache Kafka, scikit-learn, NestJS, Next.js 16, Mapbox GL JS, Socket.IO
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
@@ -36,7 +41,8 @@ Here is a curated list of architectural challenges and optimizations I have engi
 * **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS
 * **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe, PostGIS, pgvector
 * **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
-* **Backend:** Node.js, Next.js API Routes
+* **Backend:** Node.js, Next.js API Routes, NestJS
+* **Event-Driven:** Apache Kafka, Socket.IO
 
 ---
 
