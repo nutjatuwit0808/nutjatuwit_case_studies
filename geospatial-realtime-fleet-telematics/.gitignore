@@ -1,0 +1,12 @@
+# Dependencies
+node_modules
+.venv
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Misc
+.DS_Store
+*.log

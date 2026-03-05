@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="40" height="60">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="15" stdDeviation="15" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34495e"/>
+      <stop offset="100%" stop-color="#1a252f"/>
+    </linearGradient>
+    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#27ae60"/>
+      <stop offset="20%" stop-color="#2ecc71"/>
+      <stop offset="80%" stop-color="#2ecc71"/>
+      <stop offset="100%" stop-color="#27ae60"/>
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="75" y="130" width="40" height="80" rx="10" fill="#222f3e"/>
+    <rect x="285" y="130" width="40" height="80" rx="10" fill="#222f3e"/>
+    <rect x="75" y="390" width="40" height="80" rx="10" fill="#222f3e"/>
+    <rect x="285" y="390" width="40" height="80" rx="10" fill="#222f3e"/>
+
+    <rect x="95" y="80" width="210" height="440" rx="45" fill="url(#bodyGradient)"/>
+
+    <path d="M 120 80 L 130 160" stroke="#27ae60" stroke-width="3" fill="none"/>
+    <path d="M 280 80 L 270 160" stroke="#27ae60" stroke-width="3" fill="none"/>
+    
+    <path d="M 120 520 L 135 440" stroke="#27ae60" stroke-width="3" fill="none"/>
+    <path d="M 280 520 L 265 440" stroke="#27ae60" stroke-width="3" fill="none"/>
+
+    <path d="M 120 220 Q 200 235 280 220 L 265 150 Q 200 135 135 150 Z" fill="url(#glassGradient)"/>
+    <path d="M 130 215 Q 200 225 270 215 L 260 190 Q 200 200 140 190 Z" fill="#ffffff" opacity="0.1"/>
+
+    <path d="M 120 380 Q 200 365 280 380 L 265 450 Q 200 465 135 450 Z" fill="url(#glassGradient)"/>
+    <path d="M 130 385 Q 200 375 270 385 L 260 410 Q 200 400 140 410 Z" fill="#ffffff" opacity="0.1"/>
+
+    <path d="M 115 230 L 115 370 L 125 365 L 125 235 Z" fill="url(#glassGradient)"/>
+    <path d="M 285 230 L 285 370 L 275 365 L 275 235 Z" fill="url(#glassGradient)"/>
+
+    <rect x="125" y="235" width="150" height="130" rx="20" fill="#2ecc71"/>
+    <rect x="145" y="250" width="110" height="60" rx="10" fill="#1a252f"/>
+
+    <rect x="80" y="210" width="20" height="35" rx="8" fill="#27ae60"/>
+    <rect x="300" y="210" width="20" height="35" rx="8" fill="#27ae60"/>
+
+    <rect x="110" y="85" width="40" height="20" rx="8" fill="#f1c40f"/>
+    <rect x="250" y="85" width="40" height="20" rx="8" fill="#f1c40f"/>
+    
+    <rect x="165" y="82" width="70" height="12" rx="4" fill="#222f3e"/>
+
+    <rect x="110" y="495" width="45" height="20" rx="8" fill="#e74c3c"/>
+    <rect x="245" y="495" width="45" height="20" rx="8" fill="#e74c3c"/>
+    <rect x="180" y="440" width="40" height="6" rx="3" fill="#e74c3c"/>
+  </g>
+</svg>

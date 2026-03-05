@@ -33,6 +33,11 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** ระบบตรวจจับความผิดปกติของพิกัด GPS รถบรรทุกแบบ Real-time ด้วย Event-Driven Architecture (Kafka, Python AI, NestJS, Next.js + Mapbox)
 **Tech:** Python, Apache Kafka, scikit-learn, NestJS, Next.js 16, Mapbox GL JS, Socket.IO
 
+### 5. [Fleet MVT: Dynamic MVT Engine for Fleet Telematics](./geospatial-realtime-fleet-telematics)
+**Domain:** GIS / Real-time / Vector Tiles
+**คำอธิบาย:** จำลองและแสดงผลยานพาหนะ 1,000 คันบนแผนที่แบบ Real-time ด้วย Spatial Interpolation คำนวณตำแหน่ง On-the-fly เสิร์ฟเป็น MVT (ไม่ Update DB)
+**Tech:** Supabase (PostgreSQL + PostGIS), Upstash Redis, NestJS, Next.js 16, Mapbox GL JS
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here

@@ -1,0 +1,34 @@
+# โครงสร้างโปรเจกต์ Case Studies
+
+แต่ละโฟลเดอร์ระดับ root (ยกเว้น `.cursor`, `.git`, `node_modules`, `.venv`) คือ **case study** แยกกัน
+
+## โครงสร้างทั่วไปของ Case Study
+
+```
+case-study-name/
+├── README.md           # เอกสารของ case study
+├── api/                # Backend (NestJS, etc.) — ถ้ามี
+├── dashboard/         # Frontend (Next.js) — ถ้ามี
+├── seed/               # Scripts สำหรับ seed data — ถ้ามี
+└── ...
+```
+
+## โครงสร้าง Next.js (dashboard/)
+
+สำหรับ case studies ที่ใช้ Next.js App Router:
+
+| โฟลเดอร์ | หน้าที่ |
+|-----------|---------|
+| `app/` | Routes, layout, page components |
+| `components/` | UI components (Client/Server) |
+| `lib/` | Utilities, config, clients |
+| `hooks/` | Custom hooks (data-fetch, reusable logic) |
+| `types/` | TypeScript interfaces (ถ้ามี) |
+
+### Path alias
+ใช้ `@/` สำหรับ imports (เช่น `@/lib/map-config`, `@/components/FleetMap`)
+
+### หลักการจัดไฟล์
+- **lib/** — constants, config, pure functions, API clients
+- **hooks/** — logic ที่มี state/effect (useState, useEffect)
+- **components/** — UI เท่านั้น  logic ซับซ้อนแยกไป hooks หรือ lib
