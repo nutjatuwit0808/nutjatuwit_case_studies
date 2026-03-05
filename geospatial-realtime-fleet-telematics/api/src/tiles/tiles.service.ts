@@ -54,7 +54,7 @@ SELECT ST_AsMVT(mvt_geoms.*, 'fleet_layer', 4096, 'mvt_geom') AS tile
 FROM mvt_geoms
 `;
 
-const CACHE_TTL_SEC = 2;
+const CACHE_TTL_SEC = 5;
 const CACHE_KEY_PREFIX = 'mvt:fleet';
 
 @Injectable()

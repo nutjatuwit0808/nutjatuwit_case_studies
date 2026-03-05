@@ -77,8 +77,8 @@ cd dashboard && npm install && npm run dev
 ## Architecture
 
 - **Spatial Interpolation:** ตำแหน่งรถคำนวณจาก `(elapsed_time * speed) / route_length` → `ST_LineInterpolatePoint`
-- **Cache:** Upstash Redis TTL 2 วินาที (micro-caching)
-- **Frontend:** Mapbox Vector Source + polling ทุก 2 วินาที (remove/re-add source)
+- **Cache:** Upstash Redis TTL 5 วินาที (micro-caching)
+- **Frontend:** Mapbox Vector Source + polling ทุก 5 วินาที (remove/re-add source)
 
 ### การคำนวณ Bearing (ทิศทางหันหน้าของรถ)
 
