@@ -13,6 +13,23 @@ case-study-name/
 └── ...
 ```
 
+## โครงสร้าง NestJS (api/src/)
+
+สำหรับ case studies ที่ใช้ NestJS:
+
+| โฟลเดอร์ | หน้าที่ |
+|-----------|---------|
+| `common/` | Shared utilities, constants, factories (ไม่ผูกกับ module ใด) |
+| `agents/` | AI agent services (analyzer, generator, guardrail) |
+| `chat/` | Chat controller และ orchestration service |
+| `llm/` | LLM provider services (Ollama, Typhoon API) |
+| `rag/` | RAG pipeline (embedding, vector search) |
+| `voc/` | Voice of Customer data persistence และ analytics |
+
+### หลักการจัดไฟล์ใน NestJS
+- **common/** — pure utilities/factories ที่ใช้ข้าม modules (เช่น `llm.utils.ts`, `supabase.factory.ts`, `constants.ts`)
+- ไม่ใส่ `@Injectable()` ใน common — เป็น plain functions/constants เท่านั้น
+
 ## โครงสร้าง Next.js (dashboard/)
 
 สำหรับ case studies ที่ใช้ Next.js App Router:
@@ -23,7 +40,7 @@ case-study-name/
 | `components/` | UI components (Client/Server) |
 | `lib/` | Utilities, config, clients |
 | `hooks/` | Custom hooks (data-fetch, reusable logic) |
-| `types/` | TypeScript interfaces (ถ้ามี) |
+| `types/` | TypeScript interfaces และ shared types |
 
 ### Path alias
 ใช้ `@/` สำหรับ imports (เช่น `@/lib/map-config`, `@/components/FleetMap`)
@@ -32,3 +49,4 @@ case-study-name/
 - **lib/** — constants, config, pure functions, API clients
 - **hooks/** — logic ที่มี state/effect (useState, useEffect)
 - **components/** — UI เท่านั้น  logic ซับซ้อนแยกไป hooks หรือ lib
+- **types/** — TypeScript interfaces ที่ใช้ข้าม components/lib (เช่น `VocAnalytics`)

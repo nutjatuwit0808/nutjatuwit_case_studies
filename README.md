@@ -38,15 +38,22 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** จำลองและแสดงผลยานพาหนะ 1,000 คันบนแผนที่แบบ Real-time ด้วย Spatial Interpolation คำนวณตำแหน่ง On-the-fly เสิร์ฟเป็น MVT (ไม่ Update DB)
 **Tech:** Supabase (PostgreSQL + PostGIS), Upstash Redis, NestJS, Next.js 16, Mapbox GL JS
 
+### 6. [AI Typhoon Multi-Agent: Customer Support System](./ai-typhoon-multi-agent)
+**Domain:** AI / Multi-Agent / LLM / RAG
+**คำอธิบาย:** ระบบ Customer Support อัตโนมัติแบบ Multi-Agent ใช้ Analyzer Agent (Ollama/Typhoon) วิเคราะห์ intent/sentiment/urgency, RAG ค้นหาคู่มือจาก Supabase pgvector, Generator Agent (Typhoon API) สร้างคำตอบแบบ streaming และ Guardrail Agent ตรวจสอบคุณภาพก่อนส่งให้ลูกค้า พร้อม VoC Dashboard แสดง analytics
+**Tech:** NestJS, Next.js, LangChain, Ollama, Typhoon API (OpenAI-compatible), Google Gemini Embeddings, Supabase (pgvector), Zustand, Chart.js, Zod, Tailwind CSS
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
 
 * **Languages:** JavaScript (ES6+), TypeScript, Python
-* **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS
+* **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS, Chart.js, Zustand
 * **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe, PostGIS, pgvector
 * **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
 * **Backend:** Node.js, Next.js API Routes, NestJS
+* **AI / LLM:** LangChain, Ollama, Typhoon API, Google Gemini Embeddings, RAG, Multi-Agent Systems
+* **Validation / Schema:** Zod
 * **Event-Driven:** Apache Kafka, Socket.IO
 
 ---
