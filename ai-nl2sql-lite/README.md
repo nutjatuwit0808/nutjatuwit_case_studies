@@ -9,6 +9,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
 - [1. Flow การทำงานอย่างละเอียด (Detailed System Flow)](#1-flow-การทำงานอย่างละเอียด-detailed-system-flow)
   - [Phase 1 — Data Preparation](#phase-1-data-preparation)
   - [Phase 2 — LoRA Fine-Tuning (Optional)](#phase-2-lora-fine-tuning-optional)
+  - [ขีดจำกัด: ไฟล์โมเดลที่เทรนแล้วกับ GitHub](#ขีดจำกัด-ไฟล์โมเดลที่เทรนแล้วกับ-github)
   - [Phase 3 — Inference Pipeline (Secure)](#phase-3-inference-pipeline-secure)
   - [Overall System Flow](#overall-system-flow)
 - [2. Pain Points ที่โมเดลนี้ช่วยและต่อยอดได้ (Pain Points & Extensions)](#2-pain-points-ที่โมเดลนี้ช่วยและต่อยอดได้-pain-points--extensions)
@@ -95,6 +96,29 @@ flowchart LR
 | 2 | `mlx_lm.lora` training on Apple Silicon |
 | 3 | Output: `adapters/` (adapters.safetensors, adapter_config.json) |
 | 4 | `mlx_lm.fuse` to merge adapter with base model → `fused_model/` |
+
+---
+
+### ขีดจำกัด: ไฟล์โมเดลที่เทรนแล้วกับ GitHub
+
+**โมเดลที่เทรนแล้วไม่สามารถอัปโหลดขึ้น GitHub ได้** เนื่องจากขีดจำกัดขนาดไฟล์ GitHub กำหนดไว้ที่ **100 MB ต่อไฟล์** ขณะที่ไฟล์โมเดลที่ได้จาก Phase 2 (LoRA fine-tuning) มีขนาดเกินขีดจำกัดนี้
+
+#### ไฟล์ที่อัปโหลดไม่ได้
+
+ไฟล์เหล่านี้ถูกสร้างขึ้นระหว่างขั้นตอนการเทรนโมเดล และถูกระบุใน `.gitignore` แล้ว:
+
+| โฟลเดอร์ | ไฟล์ | ขนาดโดยประมาณ | คำอธิบาย |
+|----------|------|---------------|----------|
+| `adapters/` | `adapters.safetensors` | ~21 MB | ผลลัพธ์จาก `mlx_lm.lora` training |
+| `adapters/` | `0000100_adapters.safetensors` … `0001000_adapters.safetensors` | ~21 MB ต่อไฟล์ | ไฟล์ checkpoint จาก LoRA training |
+| `fused_model/` | `model.safetensors` | ~4.5 GB | น้ำหนักโมเดลที่ fuse แล้ว (ผลลัพธ์จาก `mlx_lm.fuse`) |
+| `fused_model/` | `tokenizer.json` | ขนาดใหญ่ | Tokenizer จากโมเดลที่ fuse แล้ว |
+
+#### แนะนำ
+
+- **เทรนบนเครื่องตัวเอง** — รัน `mlx_lm.lora` และ `mlx_lm.fuse` บนเครื่องของคุณ (ต้องใช้ Apple Silicon)
+- **ดาวน์โหลดจากแหล่งอื่น** — ดาวน์โหลดโมเดลที่เทรนหรือ fuse แล้วจาก [Hugging Face Hub](https://huggingface.co/) หรือแหล่งเก็บข้อมูลอื่น (ถ้ามี)
+- เส้นทางไฟล์เหล่านี้อยู่ใน `.gitignore` แล้ว จะไม่ถูก commit เข้า repository
 
 ---
 
@@ -388,6 +412,8 @@ Question → Model → SQL → Result
 ### ขั้นตอนที่ 4: LoRA Fine-Tuning (Phase 2 - Optional)
 
 ถ้าต้องการ fine-tune โมเดลด้วยข้อมูลที่เตรียมไว้:
+
+> **หมายเหตุ:** ไฟล์ที่ได้จาก LoRA training และ fuse ไม่สามารถอัปโหลดไปยัง GitHub ได้ (เกินขีดจำกัด 100 MB ต่อไฟล์) — ดูรายละเอียดที่ [ขีดจำกัด: ไฟล์โมเดลที่เทรนแล้วกับ GitHub](#ขีดจำกัด-ไฟล์โมเดลที่เทรนแล้วกับ-github)
 
 1. ติดตั้ง mlx และ mlx-lm (ต้องอยู่ใน virtual environment — ดูขั้นตอนที่ 2):
 
