@@ -5,20 +5,21 @@ format as Chat Template, and export train.jsonl / valid.jsonl.
 """
 
 import json
-import re
+import sys
 import time
 from pathlib import Path
+
+# เพิ่ม project root เพื่อ import shared package
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from datasets import load_dataset
 from deep_translator import GoogleTranslator
 
-
-SYSTEM_PROMPT = """You are a highly skilled database engineer. Given the table schema, write a valid PostgreSQL query to answer the user's question. Return ONLY the raw SQL query without any markdown formatting or explanations."""
+from shared.prompts import SYSTEM_PROMPT
+from shared.sql_utils import strip_markdown_sql
 
 USER_TEMPLATE = """Schema: {context}
 Question: {question}"""
-
-ASSISTANT_TEMPLATE = "{answer}"
 
 CHAT_TEMPLATE = """<|system|>
 {system}
@@ -36,21 +37,10 @@ TRANSLATION_DELAY_SEC = 0.5
 RANDOM_SEED = 42
 
 
-def strip_markdown(text: str) -> str:
-    """Remove markdown code fences (```sql ... ```) from SQL text."""
-    text = text.strip()
-    # Remove ```sql ... ``` or ``` ... ```
-    pattern = r"^```\w*\s*\n?(.*?)\n?```\s*$"
-    match = re.search(pattern, text, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    return text
-
-
 def format_chat_text(context: str, question: str, answer: str) -> str:
     """Build chat template text for MLX training."""
     user_content = USER_TEMPLATE.format(context=context, question=question)
-    assistant_content = strip_markdown(answer)
+    assistant_content = strip_markdown_sql(answer)
     return CHAT_TEMPLATE.format(
         system=SYSTEM_PROMPT,
         user=user_content,
@@ -65,6 +55,13 @@ def translate_to_thai(question: str) -> str | None:
         return translator.translate(question)
     except Exception:
         return None
+
+
+def write_jsonl(path: Path, rows: list[dict]) -> None:
+    """Write list of dicts to JSONL file (one JSON object per line)."""
+    with open(path, "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 def main():
@@ -107,14 +104,10 @@ def main():
     valid_path = output_dir / "valid.jsonl"
 
     print(f"Writing {len(train_rows)} rows to {train_path}...")
-    with open(train_path, "w", encoding="utf-8") as f:
-        for row in train_rows:
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    write_jsonl(train_path, train_rows)
 
     print(f"Writing {len(valid_rows)} rows to {valid_path}...")
-    with open(valid_path, "w", encoding="utf-8") as f:
-        for row in valid_rows:
-            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    write_jsonl(valid_path, valid_rows)
 
     print("Done.")
 

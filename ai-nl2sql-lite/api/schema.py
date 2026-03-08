@@ -5,10 +5,7 @@ Uses information_schema to build CREATE TABLE statements for public schema.
 
 from typing import Optional
 
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
-from db import get_readonly_connection_string
+from db import get_readonly_connection
 
 # PostgreSQL type mapping from information_schema
 TYPE_MAP = {
@@ -45,11 +42,7 @@ def fetch_ddl(schema: str = "public") -> str:
     Build CREATE TABLE DDL for all tables in schema.
     Uses information_schema.columns.
     """
-    conn = psycopg2.connect(
-        get_readonly_connection_string(),
-        cursor_factory=RealDictCursor,
-    )
-    try:
+    with get_readonly_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -64,27 +57,25 @@ def fetch_ddl(schema: str = "public") -> str:
             )
             rows = cur.fetchall()
 
-        # Group by table
-        tables: dict[str, list[dict]] = {}
-        for r in rows:
-            t = r["table_name"]
-            if t not in tables:
-                tables[t] = []
-            tables[t].append(r)
+    # Group by table
+    tables: dict[str, list[dict]] = {}
+    for r in rows:
+        t = r["table_name"]
+        if t not in tables:
+            tables[t] = []
+        tables[t].append(r)
 
-        ddl_parts = []
-        for table_name in sorted(tables.keys()):
-            cols = tables[table_name]
-            col_defs = []
-            for c in cols:
-                col_type = _normalize_type(
-                    c["udt_name"],
-                    c.get("character_maximum_length"),
-                )
-                nullable = "" if c["is_nullable"] == "YES" else " NOT NULL"
-                col_defs.append(f'  {c["column_name"]} {col_type}{nullable}')
-            ddl_parts.append(f"CREATE TABLE {table_name} (\n" + ",\n".join(col_defs) + "\n);")
+    ddl_parts = []
+    for table_name in sorted(tables.keys()):
+        cols = tables[table_name]
+        col_defs = []
+        for c in cols:
+            col_type = _normalize_type(
+                c["udt_name"],
+                c.get("character_maximum_length"),
+            )
+            nullable = "" if c["is_nullable"] == "YES" else " NOT NULL"
+            col_defs.append(f'  {c["column_name"]} {col_type}{nullable}')
+        ddl_parts.append(f"CREATE TABLE {table_name} (\n" + ",\n".join(col_defs) + "\n);")
 
-        return "\n".join(ddl_parts) if ddl_parts else ""
-    finally:
-        conn.close()
+    return "\n".join(ddl_parts) if ddl_parts else ""

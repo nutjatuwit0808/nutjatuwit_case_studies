@@ -3,18 +3,28 @@ NL2SQL-Lite FastAPI Backend: Secure Inference Pipeline with sqlparse Guardrail.
 """
 
 import os
-import re
+import sys
+import traceback
+from pathlib import Path
+
+# เพิ่ม project root เพื่อ import shared package
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
+from config import MAX_SELF_CORRECTION_RETRIES
 from db import execute_readonly
 from guardrail import validate_sql
+from models import ChatToSqlRequest, ChatToSqlResponse
 from schema import fetch_ddl
+from shared.prompts import SYSTEM_PROMPT
+from shared.sql_utils import normalize_sql_for_postgres, strip_markdown_sql
 
 load_dotenv()
+load_dotenv(".env.local")  # local overrides (e.g. Supabase, fused_model)
 
 app = FastAPI(title="NL2SQL-Lite API")
 
@@ -22,24 +32,12 @@ app = FastAPI(title="NL2SQL-Lite API")
 _model = None
 _tokenizer = None
 
-SYSTEM_PROMPT = """You are a highly skilled database engineer. Given the table schema, write a valid PostgreSQL query to answer the user's question. Return ONLY the raw SQL query without any markdown formatting or explanations."""
 
-MAX_SELF_CORRECTION_RETRIES = 2
-
-
-def _strip_sql(text: str) -> str:
-    """Remove markdown code fences from model output."""
-    text = text.strip()
-    match = re.search(r"^```\w*\s*\n?(.*?)\n?```\s*$", text, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    return text
-
-
-def _get_model():
+def _get_model() -> tuple[Any, Any]:
+    """Lazy load MLX model and tokenizer."""
     global _model, _tokenizer
     if _model is None:
-        from mlx_lm import load, generate as mlx_generate
+        from mlx_lm import load
         model_path = os.getenv("MLX_MODEL_PATH", "mlx-community/Llama-3.2-3B-Instruct-4bit")
         _model, _tokenizer = load(model_path)
     return _model, _tokenizer
@@ -64,18 +62,12 @@ def _generate_sql(question: str, ddl: str, error_hint: str | None = None) -> str
         tokenize=False,
     )
     generated = generate(model, tokenizer, prompt=prompt, max_tokens=256)
-    return _strip_sql(generated)
+    return strip_markdown_sql(generated)
 
 
-class ChatToSqlRequest(BaseModel):
-    question: str
-    schema_hint: str | None = None
-
-
-class ChatToSqlResponse(BaseModel):
-    sql: str
-    result: list[dict[str, Any]]
-    error: str | None = None
+def _build_error_response(sql: str, error: str) -> ChatToSqlResponse:
+    """สร้าง response เมื่อ execution ล้มเหลวหลัง retries ครบ."""
+    return ChatToSqlResponse(sql=sql, result=[], error=error)
 
 
 @app.post("/api/chat-to-sql", response_model=ChatToSqlResponse)
@@ -91,6 +83,7 @@ def chat_to_sql(req: ChatToSqlRequest) -> ChatToSqlResponse:
     error_hint = None
     for attempt in range(MAX_SELF_CORRECTION_RETRIES + 1):
         sql = _generate_sql(req.question, ddl, error_hint)
+        sql = normalize_sql_for_postgres(sql)
 
         # Step 5.3: Guardrail
         ok, reason = validate_sql(sql)
@@ -104,15 +97,24 @@ def chat_to_sql(req: ChatToSqlRequest) -> ChatToSqlResponse:
         except Exception as e:
             error_hint = str(e)
             if attempt >= MAX_SELF_CORRECTION_RETRIES:
-                return ChatToSqlResponse(
-                    sql=sql,
-                    result=[],
-                    error=error_hint,
-                )
+                return _build_error_response(sql, error_hint)
 
-    return ChatToSqlResponse(sql="", result=[], error="Unexpected error")
+    return _build_error_response("", "Unexpected error")
 
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.exception_handler(Exception)
+def _handle_unhandled(request, exc: Exception):
+    """Surface unhandled errors for debugging (returns 500 with detail)."""
+    if isinstance(exc, HTTPException):
+        raise exc
+    tb = traceback.format_exc()
+    print(tb, flush=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc), "traceback": tb.split("\n")[-4:]},
+    )

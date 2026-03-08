@@ -50,3 +50,27 @@ case-study-name/
 - **hooks/** — logic ที่มี state/effect (useState, useEffect)
 - **components/** — UI เท่านั้น  logic ซับซ้อนแยกไป hooks หรือ lib
 - **types/** — TypeScript interfaces ที่ใช้ข้าม components/lib (เช่น `VocAnalytics`)
+
+## โครงสร้าง Python/FastAPI (ai-nl2sql-lite/)
+
+สำหรับ case studies ที่ใช้ Python + FastAPI:
+
+| โฟลเดอร์/ไฟล์ | หน้าที่ |
+|----------------|---------|
+| `shared/` | Utilities ที่ใช้ร่วมกันระหว่าง api และ data_prep (prompts, sql_utils) |
+| `api/` | FastAPI backend — main, db, schema, guardrail, models, config |
+| `api/main.py` | Entry point, routes, inference pipeline |
+| `api/db.py` | Database connection (read-only) |
+| `api/schema.py` | DDL fetch จาก information_schema |
+| `api/guardrail.py` | SQL validation (sqlparse) |
+| `api/models.py` | Pydantic request/response models |
+| `api/config.py` | Constants (retries, etc.) |
+| `data_prep/` | Data engineering pipeline (dataset, augmentation) |
+| `migrations/` | PostgreSQL/Supabase SQL migrations |
+| `scripts/` | Seed schema, test runner |
+| `tests/` | Test cases (test_cases.json) |
+
+### หลักการจัดไฟล์ใน Python/FastAPI
+- **shared/** — pure functions/constants ที่ใช้ข้าม api และ data_prep (DRY)
+- **api/models.py** — Pydantic models แยกจาก main
+- **api/config.py** — constants แยกจาก business logic

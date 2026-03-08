@@ -12,10 +12,12 @@ from psycopg2.extras import RealDictCursor
 
 
 def get_readonly_connection_string() -> str:
-    return os.getenv(
-        "DATABASE_URL_READONLY",
-        "postgresql://nl2sql_readonly:password@localhost:5432/postgres",
-    )
+    url = os.getenv("DATABASE_URL_READONLY")
+    if not url:
+        raise RuntimeError(
+            "DATABASE_URL_READONLY must be set in .env or environment"
+        )
+    return url
 
 
 @contextmanager

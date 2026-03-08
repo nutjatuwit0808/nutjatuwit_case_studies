@@ -43,6 +43,11 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** ระบบ Customer Support อัตโนมัติแบบ Multi-Agent ใช้ Analyzer Agent (Ollama/Typhoon) วิเคราะห์ intent/sentiment/urgency, RAG ค้นหาคู่มือจาก Supabase pgvector, Generator Agent (Typhoon API) สร้างคำตอบแบบ streaming และ Guardrail Agent ตรวจสอบคุณภาพก่อนส่งให้ลูกค้า พร้อม VoC Dashboard แสดง analytics
 **Tech:** NestJS, Next.js, LangChain, Ollama, Typhoon API (OpenAI-compatible), Google Gemini Embeddings, Supabase (pgvector), Zustand, Chart.js, Zod, Tailwind CSS
 
+### 7. [NL2SQL-Lite: Text-to-SQL with Guardrail](./ai-nl2sql-lite)
+**Domain:** AI / NLP / Database / Text-to-SQL
+**คำอธิบาย:** ระบบ Text-to-SQL รองรับสองภาษา (ไทย/อังกฤษ) LoRA fine-tune บน Apple Silicon (M2 Pro) พร้อม SQL injection guardrail (sqlparse) และ read-only database pipeline: Context Injection → LLM → Guardrail → Execute → Self-Correction
+**Tech:** Python, FastAPI, MLX, mlx-lm, psycopg2, sqlparse, Pydantic, Hugging Face datasets, deep-translator, PostgreSQL/Supabase
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
@@ -51,9 +56,9 @@ Here is a curated list of architectural challenges and optimizations I have engi
 * **Frontend:** React.js, Next.js, Mapbox GL JS, Tailwind CSS, Chart.js, Zustand
 * **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe, PostGIS, pgvector
 * **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
-* **Backend:** Node.js, Next.js API Routes, NestJS
-* **AI / LLM:** LangChain, Ollama, Typhoon API, Google Gemini Embeddings, RAG, Multi-Agent Systems
-* **Validation / Schema:** Zod
+* **Backend:** Node.js, Next.js API Routes, NestJS, FastAPI
+* **AI / LLM:** LangChain, Ollama, Typhoon API, Google Gemini Embeddings, RAG, Multi-Agent Systems, MLX, mlx-lm, Text-to-SQL
+* **Validation / Schema:** Zod, Pydantic, sqlparse
 * **Event-Driven:** Apache Kafka, Socket.IO
 
 ---

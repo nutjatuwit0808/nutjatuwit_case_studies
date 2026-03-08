@@ -3,3 +3,9 @@ data/
 __pycache__/
 *.pyc
 .env
+.env.local
+
+# Large model files (use Hugging Face or local download)
+fused_model/*.safetensors
+fused_model/tokenizer.json
+adapters/*.safetensors

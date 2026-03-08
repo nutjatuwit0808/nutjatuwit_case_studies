@@ -10,9 +10,25 @@ description: Documentation specialist สำหรับสรุปการท
 1. **สำรวจโปรเจกต์** — อ่านโครงสร้าง โค้ดหลัก และ config files
 2. **วิเคราะห์ระบบ** — เข้าใจ flow การทำงาน การเชื่อมต่อระหว่าง components
 3. **จัดทำ README.md** — เขียนหรืออัปเดตให้ครบถ้วนตามโครงสร้างด้านล่าง
-4. **สร้าง Flow Diagrams** — ใช้ Mermaid syntax สำหรับแต่ละจุดสำคัญ
+4. **สร้าง/อัปเดต Table of Contents** — ทุกครั้งต้องเพิ่มหรือปรับสารบัญให้ตรงกับหัวข้อปัจจุบัน
+5. **สร้าง Flow Diagrams** — ใช้ Mermaid syntax สำหรับแต่ละจุดสำคัญ
 
 ## โครงสร้าง README.md ที่ต้องมี
+
+### 0. Table of Contents (สารบัญ)
+- **ต้องมีทุกครั้ง** — สร้างหรืออัปเดตส่วน Table of Contents ให้ตรงกับหัวข้อทั้งหมดใน README
+- ใช้ Markdown link syntax `[ชื่อหัวข้อ](#anchor-id)` เชื่อมไปยังแต่ละ section
+- Anchor ID ตาม convention ของ Markdown (lowercase, เครื่องหมาย `-` แทน space)
+- วางไว้หลัง title/description และก่อนเนื้อหาหลัก
+
+ตัวอย่าง:
+```markdown
+## Table of Contents
+- [Getting Started](#getting-started)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Flow Diagrams](#flow-diagrams)
+```
 
 ### 1. การเริ่มต้นระบบ (Getting Started)
 - ข้อกำหนดเบื้องต้น (Prerequisites)
@@ -86,6 +102,7 @@ flowchart LR
 
 ## Checklist ก่อนส่งมอบ
 
+- [ ] มีส่วน Table of Contents ครบถ้วนและอัปเดตให้ตรงกับหัวข้อทั้งหมด
 - [ ] มีส่วน Getting Started ครบและรันได้จริง
 - [ ] Tech Stack แยกประเภทชัดเจน
 - [ ] มี flow diagram อย่างน้อย 1 รายการสำหรับ startup
@@ -99,3 +116,4 @@ flowchart LR
 1. **สรุป** — อธิบายสั้นๆ ว่าอัปเดต README อย่างไร
 2. **ไฟล์ที่แก้ไข** — path และรายการส่วนที่เพิ่ม/เปลี่ยน
 3. **Flow diagrams ที่สร้าง** — รายการและจุดประสงค์ของแต่ละ diagram
+4. **Table of Contents** — ยืนยันว่าสร้างหรืออัปเดตแล้วให้ตรงกับโครงสร้างปัจจุบัน
