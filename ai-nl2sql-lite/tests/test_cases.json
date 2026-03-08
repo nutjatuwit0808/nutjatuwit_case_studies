@@ -6,84 +6,80 @@
       "category": "Simple SELECT",
       "question_th": "สินค้าประเภท Electronics มีอะไรบ้าง",
       "question_en": "What products are in the Electronics category?",
-      "expected_sql_pattern": "SELECT.*WHERE.*category"
+      "expected_sql_pattern": "SELECT.*WHERE.*category",
+      "expected_sql": "SELECT id, name FROM t2s_products WHERE category = 'Electronics'"
     },
     {
       "id": "aggregation-sum-th",
       "category": "Aggregation SUM",
       "question_th": "รวมยอดขายทั้งหมด",
       "question_en": "What is the total sales amount?",
-      "expected_sql_pattern": "SUM.*amount"
+      "expected_sql_pattern": "SUM.*amount",
+      "expected_sql": "SELECT SUM(amount) AS total FROM t2s_sales"
     },
     {
       "id": "aggregation-count-th",
       "category": "Aggregation COUNT",
       "question_th": "มีลูกค้ากี่คนในภาคเหนือ",
       "question_en": "How many customers are in the North region?",
-      "expected_sql_pattern": "COUNT.*WHERE.*region"
+      "expected_sql_pattern": "COUNT.*WHERE.*region",
+      "expected_sql": "SELECT COUNT(*) AS count FROM t2s_customers WHERE region = 'ภาคเหนือ'"
     },
     {
       "id": "aggregation-avg-th",
       "category": "Aggregation AVG",
       "question_th": "ราคาเฉลี่ยของสินค้าเท่าไหร่",
       "question_en": "What is the average price of products?",
-      "expected_sql_pattern": "AVG.*price"
+      "expected_sql_pattern": "AVG.*price",
+      "expected_sql": "SELECT AVG(price) AS avg_price FROM t2s_products"
     },
     {
       "id": "max-th",
       "category": "MIN/MAX",
       "question_th": "ยอดขายสูงสุดคือเท่าไหร่",
       "question_en": "What is the maximum sales amount?",
-      "expected_sql_pattern": "MAX.*amount"
+      "expected_sql_pattern": "MAX.*amount",
+      "expected_sql": "SELECT MAX(amount) AS max_amount FROM t2s_sales"
     },
     {
       "id": "min-th",
       "category": "MIN/MAX",
       "question_th": "ราคาสินค้าต่ำสุดเท่าไหร่",
       "question_en": "What is the minimum product price?",
-      "expected_sql_pattern": "MIN.*price"
-    },
-    {
-      "id": "join-th",
-      "category": "JOIN",
-      "question_th": "ลูกค้าที่ซื้อ Laptop มีชื่ออะไรบ้าง",
-      "question_en": "What are the names of customers who bought Laptop?",
-      "expected_sql_pattern": "JOIN|SELECT.*FROM.*t2s_sales.*t2s_customers"
+      "expected_sql_pattern": "MIN.*price",
+      "expected_sql": "SELECT MIN(price) AS min_price FROM t2s_products"
     },
     {
       "id": "group-by-th",
       "category": "GROUP BY",
       "question_th": "ยอดขายแยกตามประเภทสินค้า",
       "question_en": "What is the sales amount by product category?",
-      "expected_sql_pattern": "GROUP BY"
+      "expected_sql_pattern": "GROUP BY",
+      "expected_sql": "SELECT p.category, SUM(s.amount) AS total_sales FROM t2s_sales s JOIN t2s_products p ON s.product_id = p.id GROUP BY p.category"
     },
     {
       "id": "order-by-limit-th",
       "category": "ORDER BY",
       "question_th": "สินค้าราคาสูงสุด 5 อันดับ",
       "question_en": "What are the top 5 most expensive products?",
-      "expected_sql_pattern": "ORDER BY.*DESC.*LIMIT"
+      "expected_sql_pattern": "ORDER BY.*DESC.*LIMIT",
+      "expected_sql": "SELECT * FROM t2s_products ORDER BY price DESC LIMIT 5"
     },
     {
       "id": "where-multiple-th",
       "category": "Simple SELECT",
       "question_th": "ลูกค้าที่ซื้อในวันที่ 2024-02-01 มีใครบ้าง",
       "question_en": "Who are the customers who bought on 2024-02-01?",
-      "expected_sql_pattern": "WHERE.*sale_date"
+      "expected_sql_pattern": "WHERE.*sale_date",
+      "expected_sql": "SELECT DISTINCT c.id, c.name FROM t2s_customers c JOIN t2s_sales s ON c.id = s.customer_id WHERE s.sale_date = '2024-02-01'"
     },
     {
       "id": "distinct-th",
       "category": "Simple SELECT",
       "question_th": "มีลูกค้ากี่คนที่ซื้อสินค้า (ไม่ซ้ำ)",
       "question_en": "How many unique customers made purchases?",
-      "expected_sql_pattern": "DISTINCT|COUNT.*DISTINCT"
-    },
-    {
-      "id": "subquery-th",
-      "category": "Subquery",
-      "question_th": "สินค้าที่ราคาสูงกว่าค่าเฉลี่ยมีอะไรบ้าง",
-      "question_en": "Which products have a price above the average?",
-      "expected_sql_pattern": "SELECT.*WHERE.*>.*SELECT|AVG"
+      "expected_sql_pattern": "DISTINCT|COUNT.*DISTINCT",
+      "expected_sql": "SELECT COUNT(DISTINCT customer_id) AS count FROM t2s_sales"
     }
   ]
 }

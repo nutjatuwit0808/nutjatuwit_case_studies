@@ -601,6 +601,57 @@ curl -X POST http://localhost:8000/api/chat-to-sql \
 
 (ต้องรัน API server อยู่ก่อน: `cd api && uvicorn main:app --reload`)
 
+### รันประเมิน Execution Accuracy (EX)
+
+**Execution Accuracy (EX)** วัดความแม่นยำของ model โดยเปรียบเทียบผลลัพธ์จาก SQL ที่ model สร้างกับ ground-truth SQL — ถ้า result set ตรงกันถือว่าถูกต้อง (ตามมาตรฐาน NL2SQL benchmarks)
+
+```bash
+# ต้องรัน API server อยู่ก่อน
+./scripts/run_eval.sh
+# หรือ
+python scripts/eval_ex.py
+```
+
+**เงื่อนไข:**
+- API server ต้องรันอยู่ (`cd api && uvicorn main:app --reload`)
+- `DATABASE_URL_READONLY` ต้องตั้งค่าใน `api/.env`
+- ต้องรัน seed schema ก่อน (`scripts/seed_sample_schema.sql`)
+
+**ตัวอย่างผลลัพธ์การประเมิน (Execution Accuracy):**
+
+```
+--- Results ---
+[PASS] simple-select-th (Simple SELECT)
+[PASS] aggregation-sum-th (Aggregation SUM)
+[FAIL] aggregation-count-th (Aggregation COUNT) - result mismatch
+[PASS] aggregation-avg-th (Aggregation AVG)
+[PASS] max-th (MIN/MAX)
+[PASS] min-th (MIN/MAX)
+[PASS] group-by-th (GROUP BY)
+[FAIL] order-by-limit-th (ORDER BY) - result mismatch
+[PASS] where-multiple-th (Simple SELECT)
+[PASS] distinct-th (Simple SELECT)
+
+--- Summary ---
+Execution Accuracy (EX): 8/10 = 80.00%
+
+By category:
+  Aggregation AVG: 1/1 (100%)
+  Aggregation COUNT: 0/1 (0%)
+  Aggregation SUM: 1/1 (100%)
+  GROUP BY: 1/1 (100%)
+  MIN/MAX: 2/2 (100%)
+  ORDER BY: 0/1 (0%)
+  Simple SELECT: 3/3 (100%)
+```
+
+### วิเคราะห์เคสที่ FAIL และแนวทางปรับปรุง
+
+| case id | สาเหตุ | แนวทางแก้ไข |
+|---------|--------|-------------|
+| **aggregation-count-th** | ยังติดปัญหาเรื่องภาษา และคำในการนำไปใช้ในการ query — คำถามใช้ "ภาคเหนือ" แต่ model สร้าง `WHERE region = 'North'` ทำให้ผลลัพธ์ไม่ตรง | เพิ่ม training data ที่ map คำไทย (ภาคเหนือ, ภาคกลาง) กับค่าจริงใน DB; หรือใช้ schema hint อธิบาย region values |
+| **order-by-limit-th** | Model ไม่เข้าใจการ limit ข้อมูล — สร้าง `SELECT MAX(price)` แทน `ORDER BY price DESC LIMIT 5` | ปรับ dataset ให้มีตัวอย่างคำถาม "อันดับ", "top N", "limit" มากขึ้น |
+
 ---
 
 ## สรุปลำดับการรัน
@@ -613,3 +664,4 @@ curl -X POST http://localhost:8000/api/chat-to-sql \
 | 4 | (Optional) LoRA Fine-Tuning | `mlx_lm.lora ...` แล้ว `mlx_lm.fuse ...` |
 | 5 | ติดตั้ง API deps | `pip install -r api/requirements.txt` |
 | 6 | รัน API | `cd api && python3 -m uvicorn main:app --reload` |
+| 7 | (Optional) ประเมิน EX | `./scripts/run_eval.sh` (หลัง seed schema และรัน API แล้ว) |
