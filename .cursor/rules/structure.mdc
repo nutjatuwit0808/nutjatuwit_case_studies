@@ -61,13 +61,17 @@ case-study-name/
 | `api/` | FastAPI backend — main, db, schema, guardrail, models, config |
 | `api/main.py` | Entry point, routes, inference pipeline |
 | `api/db.py` | Database connection (read-only) |
-| `api/schema.py` | DDL fetch จาก information_schema |
+| `api/schema.py` | DDL fetch จาก information_schema (_fetch_columns_raw shared helper) |
 | `api/guardrail.py` | SQL validation (sqlparse) |
 | `api/models.py` | Pydantic request/response models |
 | `api/config.py` | Constants (retries, etc.) |
+| `frontend/` | Next.js App Router UI |
+| `frontend/src/components/ui/` | Shared UI components (LoadingMessage, PromptBlock) |
+| `frontend/src/lib/` | API client, errors (getErrorMessage) |
+| `frontend/src/hooks/` | useSchema (data-fetch logic) |
 | `data_prep/` | Data engineering pipeline (dataset, augmentation) |
 | `migrations/` | PostgreSQL/Supabase SQL migrations |
-| `scripts/` | Seed schema, test runner |
+| `scripts/` | Seed schema, eval (eval_ex ใช้ api.db.execute_readonly) |
 | `tests/` | Test cases (test_cases.json) |
 
 ### หลักการจัดไฟล์ใน Python/FastAPI

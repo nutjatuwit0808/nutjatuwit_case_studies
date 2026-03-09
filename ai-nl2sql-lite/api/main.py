@@ -13,13 +13,14 @@ from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from config import MAX_SELF_CORRECTION_RETRIES
 from db import execute_readonly
 from guardrail import validate_sql
 from models import ChatToSqlRequest, ChatToSqlResponse
-from schema import fetch_ddl
+from schema import fetch_ddl, fetch_tables
 from shared.prompts import SYSTEM_PROMPT
 from shared.sql_utils import normalize_sql_for_postgres, strip_markdown_sql
 
@@ -27,6 +28,13 @@ load_dotenv()
 load_dotenv(".env.local")  # local overrides (e.g. Supabase, fused_model)
 
 app = FastAPI(title="NL2SQL-Lite API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Lazy-loaded MLX model
 _model = None
@@ -43,15 +51,11 @@ def _get_model() -> tuple[Any, Any]:
     return _model, _tokenizer
 
 
-def _generate_sql(question: str, ddl: str, error_hint: str | None = None) -> str:
-    """Generate SQL from question + schema using MLX."""
+def _generate_sql(user_content: str) -> str:
+    """Generate SQL from user content using MLX."""
     from mlx_lm import generate
 
     model, tokenizer = _get_model()
-    user_content = f"Schema: {ddl}\nQuestion: {question}"
-    if error_hint:
-        user_content += f"\n\nPrevious attempt failed with error: {error_hint}"
-
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_content},
@@ -65,9 +69,14 @@ def _generate_sql(question: str, ddl: str, error_hint: str | None = None) -> str
     return strip_markdown_sql(generated)
 
 
-def _build_error_response(sql: str, error: str) -> ChatToSqlResponse:
+def _build_error_response(
+    sql: str, error: str, system_prompt: str | None = None, user_prompt: str | None = None
+) -> ChatToSqlResponse:
     """สร้าง response เมื่อ execution ล้มเหลวหลัง retries ครบ."""
-    return ChatToSqlResponse(sql=sql, result=[], error=error)
+    return ChatToSqlResponse(
+        sql=sql, result=[], error=error,
+        system_prompt=system_prompt, user_prompt=user_prompt,
+    )
 
 
 @app.post("/api/chat-to-sql", response_model=ChatToSqlResponse)
@@ -83,7 +92,11 @@ def chat_to_sql(req: ChatToSqlRequest) -> ChatToSqlResponse:
 
     error_hint = None
     for attempt in range(MAX_SELF_CORRECTION_RETRIES + 1):
-        sql = _generate_sql(req.question, ddl, error_hint)
+        user_content = f"Schema: {ddl}\nQuestion: {req.question}"
+        if error_hint:
+            user_content += f"\n\nPrevious attempt failed with error: {error_hint}"
+
+        sql = _generate_sql(user_content)
         sql = normalize_sql_for_postgres(sql)
 
         # Step 5.3: Guardrail
@@ -94,13 +107,29 @@ def chat_to_sql(req: ChatToSqlRequest) -> ChatToSqlResponse:
         # Step 5.4: Read-only execution
         try:
             result = execute_readonly(sql)
-            return ChatToSqlResponse(sql=sql, result=result, error=None)
+            return ChatToSqlResponse(
+                sql=sql, result=result, error=None,
+                system_prompt=SYSTEM_PROMPT, user_prompt=user_content,
+            )
         except Exception as e:
             error_hint = str(e)
             if attempt >= MAX_SELF_CORRECTION_RETRIES:
-                return _build_error_response(sql, error_hint)
+                return _build_error_response(
+                    sql, error_hint,
+                    system_prompt=SYSTEM_PROMPT, user_prompt=user_content,
+                )
 
     return _build_error_response("", "Unexpected error")
+
+
+@app.get("/api/schema")
+def get_schema():
+    """Return list of tables with columns for frontend."""
+    try:
+        tables = fetch_tables()
+        return {"tables": tables}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=str(e))
 
 
 @app.get("/health")

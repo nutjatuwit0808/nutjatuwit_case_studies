@@ -46,7 +46,7 @@ Here is a curated list of architectural challenges and optimizations I have engi
 ### 7. [NL2SQL-Lite: Text-to-SQL with Guardrail](./ai-nl2sql-lite)
 **Domain:** AI / NLP / Database / Text-to-SQL
 **คำอธิบาย:** ระบบ Text-to-SQL รองรับสองภาษา (ไทย/อังกฤษ) LoRA fine-tune บน Apple Silicon (M2 Pro) พร้อม SQL injection guardrail (sqlparse) และ read-only database pipeline: Context Injection → LLM → Guardrail → Execute → Self-Correction
-**Tech:** Python, FastAPI, MLX, mlx-lm, psycopg2, sqlparse, Pydantic, Hugging Face datasets, deep-translator, PostgreSQL/Supabase
+**Tech:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Python, FastAPI, MLX, mlx-lm, psycopg2, sqlparse, Pydantic, Hugging Face datasets, deep-translator, PostgreSQL/Supabase
 
 ---
 

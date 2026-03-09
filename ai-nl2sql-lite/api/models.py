@@ -16,3 +16,5 @@ class ChatToSqlResponse(BaseModel):
     sql: str
     result: list[dict[str, Any]]
     error: str | None = None
+    system_prompt: str | None = None
+    user_prompt: str | None = None

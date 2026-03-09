@@ -21,6 +21,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
   - [ขั้นตอนที่ 4: LoRA Fine-Tuning (Phase 2 - Optional)](#ขั้นตอนที่-4-lora-fine-tuning-phase-2---optional)
   - [ขั้นตอนที่ 5: ติดตั้ง Dependencies สำหรับ API Backend](#ขั้นตอนที่-5-ติดตั้ง-dependencies-สำหรับ-api-backend)
   - [ขั้นตอนที่ 6: รัน API Server](#ขั้นตอนที่-6-รัน-api-server)
+  - [ขั้นตอนที่ 7: รัน Frontend (Optional)](#ขั้นตอนที่-7-รัน-frontend-optional)
 - [แปลงโมเดลเป็น GGUF](#แปลงโมเดลเป็น-gguf)
 - [เคสตัวอย่างสำหรับทดสอบ](#เคสตัวอย่างสำหรับทดสอบ)
 - [สรุปลำดับการรัน](#สรุปลำดับการรัน)
@@ -30,6 +31,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
 | Category | Technologies |
 |----------|--------------|
 | **Backend** | Python 3.x, FastAPI |
+| **Frontend** | Next.js, React, TypeScript, Tailwind CSS |
 | **ML/Inference** | MLX (Apple Silicon), mlx-lm |
 | **Database** | PostgreSQL, Supabase |
 | **Libraries** | sqlparse, Pydantic, deep_translator, Hugging Face datasets |
@@ -46,6 +48,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
   - `models.py` - Pydantic request/response
   - `config.py` - Constants
   - `db.py`, `schema.py`, `guardrail.py` - DB, DDL, validation
+- `frontend/` - Next.js UI สำหรับแสดง schema, ผลลัพธ์ และ floating chat
 - `migrations/` - PostgreSQL/Supabase read-only user setup
 - `scripts/` - Seed schema, test runner
 - `tests/` - Test cases (test_cases.json)
@@ -502,27 +505,69 @@ Question → Model → SQL → Result
 
 ### ขั้นตอนที่ 6: รัน API Server
 
-1. เข้าโฟลเดอร์ api:
+1. เปิด venv ก่อน (สำคัญ — ถ้าไม่เปิดจะได้ `No module named uvicorn`):
+
+   ```bash
+   source .venv/bin/activate
+   ```
+
+2. เข้าโฟลเดอร์ api:
 
    ```bash
    cd api
    ```
 
-2. รัน FastAPI server:
+3. รัน FastAPI server:
 
    ```bash
-   python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-   หรือใช้ uvicorn โดยตรง:
+   หรือใช้ uvicorn โดยตรง (ต้องเปิด venv ก่อน):
 
    ```bash
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-3. ตรวจสอบ API:
+   หรือรันแบบบรรทัดเดียวจาก project root:
+
+   ```bash
+   cd ai-nl2sql-lite && source .venv/bin/activate && cd api && python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+4. ตรวจสอบ API:
    - Health: `curl http://localhost:8000/health`
    - Chat-to-SQL: `curl -X POST http://localhost:8000/api/chat-to-sql -H "Content-Type: application/json" -d '{"question": "รวมยอดขายทั้งหมด"}'`
+
+---
+
+### ขั้นตอนที่ 7: รัน Frontend (Optional)
+
+1. เข้าโฟลเดอร์ frontend:
+
+   ```bash
+   cd frontend
+   ```
+
+2. ติดตั้ง dependencies และสร้าง `.env.local`:
+
+   ```bash
+   npm install
+   cp .env.local.example .env.local
+   ```
+
+   แก้ไข `.env.local` ถ้า API อยู่ที่ port อื่น: `NEXT_PUBLIC_API_URL=http://localhost:8000`
+
+3. รัน Next.js dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. เปิดเบราว์เซอร์ที่ `http://localhost:3000`:
+   - ฝั่งซ้าย: แสดงตารางทั้งหมดใน schema ที่เชื่อมต่ออยู่
+   - ฝั่งขวา: แสดง SQL และผลลัพธ์จากการ query
+   - Floating chat: พิมพ์คำถามด้านล่างกลางจอ เช่น "รวมยอดขายทั้งหมด"
 
 ---
 

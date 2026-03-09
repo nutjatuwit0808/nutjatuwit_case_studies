@@ -25,6 +25,7 @@ from pathlib import Path
 # Project root
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 # Load env from api/.env
 def _load_env():
@@ -75,24 +76,6 @@ def _results_equal(actual: list, expected: list) -> bool:
     return a_tuples == e_tuples
 
 
-def _execute_expected_sql(sql: str) -> list[dict]:
-    """Execute SQL via read-only DB connection."""
-    import psycopg2
-    from psycopg2.extras import RealDictCursor
-
-    url = os.getenv("DATABASE_URL_READONLY")
-    if not url:
-        raise RuntimeError("DATABASE_URL_READONLY must be set in api/.env")
-
-    conn = psycopg2.connect(url, cursor_factory=RealDictCursor)
-    try:
-        with conn.cursor() as cur:
-            cur.execute(sql)
-            return list(cur.fetchall())
-    finally:
-        conn.close()
-
-
 def _call_api(question: str, schema: str, api_url: str) -> dict:
     """POST to /api/chat-to-sql and return response."""
     payload = json.dumps({"question": question, "schema_hint": schema}).encode()
@@ -118,6 +101,8 @@ def _check_api_health(api_url: str) -> bool:
 
 def main():
     _load_env()
+
+    from api.db import execute_readonly
 
     api_url = os.getenv("API_URL", "http://localhost:8000")
     tests_path = PROJECT_ROOT / "tests" / "test_cases.json"
@@ -150,7 +135,7 @@ def main():
 
     # Check DB
     try:
-        _execute_expected_sql("SELECT 1")
+        execute_readonly("SELECT 1")
         print("Database: connected")
     except Exception as e:
         print(f"Error: Database connection failed: {e}")
@@ -182,7 +167,7 @@ def main():
                 continue
 
             try:
-                expected_result = _execute_expected_sql(expected_sql)
+                expected_result = execute_readonly(expected_sql)
             except Exception as e:
                 results.append((case_id, category, False, f"Expected SQL error: {e}", generated_sql, expected_sql))
                 continue
