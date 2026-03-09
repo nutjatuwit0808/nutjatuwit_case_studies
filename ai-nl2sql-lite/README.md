@@ -21,6 +21,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
   - [ขั้นตอนที่ 4: LoRA Fine-Tuning (Phase 2 - Optional)](#ขั้นตอนที่-4-lora-fine-tuning-phase-2---optional)
   - [ขั้นตอนที่ 5: ติดตั้ง Dependencies สำหรับ API Backend](#ขั้นตอนที่-5-ติดตั้ง-dependencies-สำหรับ-api-backend)
   - [ขั้นตอนที่ 6: รัน API Server](#ขั้นตอนที่-6-รัน-api-server)
+- [แปลงโมเดลเป็น GGUF](#แปลงโมเดลเป็น-gguf)
 - [เคสตัวอย่างสำหรับทดสอบ](#เคสตัวอย่างสำหรับทดสอบ)
 - [สรุปลำดับการรัน](#สรุปลำดับการรัน)
 
@@ -525,6 +526,58 @@ Question → Model → SQL → Result
 
 ---
 
+## แปลงโมเดลเป็น GGUF
+
+### แปลงทำไม (Why Convert)
+
+- **MLX ใช้ได้เฉพาะ Apple Silicon** — ถ้าต้องการ deploy บน cloud (Linux/x86) หรือแชร์โมเดลให้คนอื่น ต้องแปลงเป็น GGUF
+- **GGUF เป็น format มาตรฐาน** — ใช้กับ Ollama, llama.cpp, LM Studio ได้
+- **Production deployment** — รันบน server Linux ได้ ไม่จำกัดแค่ Mac
+
+### วิธีการแปลงไฟล์ (How to Convert)
+
+**Prerequisites**
+
+- Clone [llama.cpp](https://github.com/ggml-org/llama.cpp): `git clone https://github.com/ggml-org/llama.cpp`
+- ติดตั้ง dependencies สำหรับ conversion:
+  ```bash
+  pip install -r scripts/requirements-convert.txt
+  pip install -r /path/to/llama.cpp/requirements.txt
+  ```
+
+**Input**
+
+- โฟลเดอร์ `adapters/` ต้องมี `adapters.safetensors` และ `adapter_config.json` (จาก LoRA training)
+
+**คำสั่งรัน**
+
+```bash
+./scripts/convert_to_gguf.sh /path/to/llama.cpp [--base BASE_MODEL] [--out OUTPUT.gguf]
+```
+
+**Output**
+
+- ไฟล์ `nl2sql-lite.gguf` (หรือตาม `--out`)
+
+**หมายเหตุ**
+
+- Base model จะถูกดาวน์โหลดจาก Hugging Face เมื่อรันครั้งแรก (~16 GB)
+
+### นำไปใช้งานต่อยังไง (How to Use the Converted GGUF)
+
+- **Ollama**: สร้าง Modelfile ชี้ไปที่ `nl2sql-lite.gguf` แล้ว `ollama create nl2sql-lite -f Modelfile`
+- **llama.cpp**: รัน `./llama-cli -m nl2sql-lite.gguf -p "prompt"` หรือใช้ server mode
+- **LM Studio**: เปิดไฟล์ .gguf ในโปรแกรม
+
+ตัวอย่าง Modelfile สำหรับ Ollama:
+
+```
+FROM ./nl2sql-lite.gguf
+PARAMETER temperature 0.2
+```
+
+---
+
 ## เคสตัวอย่างสำหรับทดสอบ
 
 ### เตรียม Database (สำหรับ E2E)
@@ -665,3 +718,4 @@ By category:
 | 5 | ติดตั้ง API deps | `pip install -r api/requirements.txt` |
 | 6 | รัน API | `cd api && python3 -m uvicorn main:app --reload` |
 | 7 | (Optional) ประเมิน EX | `./scripts/run_eval.sh` (หลัง seed schema และรัน API แล้ว) |
+| 8 | (Optional) แปลงเป็น GGUF | `./scripts/convert_to_gguf.sh /path/to/llama.cpp` (สำหรับ deploy บน cloud/Ollama) |

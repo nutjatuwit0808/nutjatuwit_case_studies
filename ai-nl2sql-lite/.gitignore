@@ -9,3 +9,6 @@ __pycache__/
 fused_model/*.safetensors
 fused_model/tokenizer.json
 adapters/*.safetensors
+
+# GGUF conversion intermediate output
+converted/

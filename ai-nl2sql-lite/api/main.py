@@ -77,6 +77,7 @@ def chat_to_sql(req: ChatToSqlRequest) -> ChatToSqlResponse:
     5.1 Context Injection -> 5.2 LLM -> 5.3 Guardrail -> 5.4 Execute -> 5.5 Self-Correction
     """
     ddl = req.schema_hint if req.schema_hint else fetch_ddl()
+
     if not ddl:
         raise HTTPException(status_code=503, detail="No schema available")
 
