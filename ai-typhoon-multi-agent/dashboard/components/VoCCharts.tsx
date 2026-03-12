@@ -97,7 +97,7 @@ export function VoCCharts() {
     datasets: [
       {
         data: sentimentLabels.map((k) => data.bySentiment[k]),
-        backgroundColor: ["#22c55e", "#eab308", "#ef4444"],
+        backgroundColor: ["#ef4444", "#eab308", "#22c55e"],
       },
     ],
   };

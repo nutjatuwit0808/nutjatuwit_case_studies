@@ -7,6 +7,7 @@ A Thai-language Customer Support system built on a **Hybrid Multi-Agent** archit
 ## Table of Contents
 
 - [Overview](#overview)
+- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [System Components](#system-components)
@@ -31,6 +32,18 @@ Omni-Typhoon is designed to handle Thai-language customer support queries end-to
 5. **Record** every interaction for VoC analytics visible on the dashboard.
 
 The system showcases Typhoon's strength in Thai NLP: handling no-space text, code-switching (Thai–English), colloquial language, ambiguous phrasing, and multi-type PII masking.
+
+---
+
+## Screenshots
+
+### 1. ตัวอย่างการแชท
+
+![ตัวอย่างการแชท](assets/ex1.png)
+
+### 2. การแยกประเภทของ emotional และ intent ของข้อความ
+
+![การแยกประเภท emotional และ intent](assets/ex2.png)
 
 ---
 
