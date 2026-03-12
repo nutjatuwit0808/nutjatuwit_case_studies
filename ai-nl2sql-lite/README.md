@@ -5,6 +5,7 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
 ## Table of Contents
 
 - [Technical Stack Summary](#technical-stack-summary)
+- [Screenshots](#screenshots)
 - [Structure](#structure)
 - [1. Flow การทำงานอย่างละเอียด (Detailed System Flow)](#1-flow-การทำงานอย่างละเอียด-detailed-system-flow)
   - [Phase 1 — Data Preparation](#phase-1-data-preparation)
@@ -36,6 +37,18 @@ Text-to-SQL system with bilingual (Thai/English) support, LoRA fine-tuned on App
 | **Database** | PostgreSQL, Supabase |
 | **Libraries** | sqlparse, Pydantic, deep_translator, Hugging Face datasets |
 | **DevOps/Tools** | uvicorn, psycopg2 |
+
+---
+
+## Screenshots
+
+### การค้นหาปกติ
+
+![การค้นหาปกติ](assets/ex1.png)
+
+### การค้นหาแบบติด guardrail
+
+![การค้นหาแบบติด guardrail](assets/ex2.png)
 
 ---
 
