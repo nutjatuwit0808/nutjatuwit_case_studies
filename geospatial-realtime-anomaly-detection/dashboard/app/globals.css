@@ -15,3 +15,13 @@ body {
   color: var(--foreground);
   font-family: system-ui, sans-serif;
 }
+
+.vehicle-alert-popup .mapboxgl-popup-content {
+  padding: 0.75rem 1rem;
+  background: rgba(253, 0, 0, 0.95);
+  border: 1px solid rgb(248 113 113 / 0.5);
+  border-radius: 0.5rem;
+  color: rgb(9, 0, 0);
+  font-size: 0.875rem;
+  max-width: 280px;
+}

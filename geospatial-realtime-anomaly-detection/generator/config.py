@@ -1,13 +1,15 @@
 """Generator configuration: Kafka, topic, vehicle count, and Bangkok area bounds."""
-import os
+import sys
+from pathlib import Path
 
-# Kafka
-KAFKA_BROKERS = os.getenv("KAFKA_BROKERS", "localhost:9092")
-TOPIC_GPS = "vehicle-gps-stream"
+# เพิ่ม project root เพื่อ import shared
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from shared.config import KAFKA_BROKERS, TOPIC_GPS
 
 # Simulation
-VEHICLE_COUNT = int(os.getenv("VEHICLE_COUNT", "100"))
-INTERVAL_SEC = float(os.getenv("INTERVAL_SEC", "1.0"))
+VEHICLE_COUNT = int(os.getenv("VEHICLE_COUNT", "20"))
+INTERVAL_SEC = float(os.getenv("INTERVAL_SEC", "3.0"))
 
 # Bangkok area bounds for mock coordinates
 LAT_MIN = 13.65

@@ -3,10 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { MAP_CENTER, MAP_STYLE, MAP_ZOOM } from "@/lib/map-config";
-
-const MAP_CONTAINER_CLASS = "h-full w-full";
-const MAP_WRAPPER_CLASS = "relative h-full min-h-[400px] w-full";
+import {
+  MAP_CENTER,
+  MAP_STYLE,
+  MAP_ZOOM,
+  MAP_CONTAINER_CLASS,
+  MAP_WRAPPER_CLASS,
+} from "@/lib/map-config";
 
 export interface UseMapboxMapOptions {
   onLoad: (map: mapboxgl.Map) => void | Promise<void>;

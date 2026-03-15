@@ -1,12 +1,15 @@
 "use client";
 
 import type { AlertPayload } from "@/types/websocket";
+import { getTranslatedAnomalyTypes } from "@/lib/anomaly-translations";
 
 interface AlertToastProps {
   alert: AlertPayload;
 }
 
 export function AlertToast({ alert }: AlertToastProps) {
+  const translatedTypes = getTranslatedAnomalyTypes(alert.anomaly_types);
+
   return (
     <div className="rounded-lg border border-red-500/50 bg-red-950/90 px-4 py-3 shadow-lg backdrop-blur">
       <div className="flex items-center gap-2">
@@ -14,7 +17,7 @@ export function AlertToast({ alert }: AlertToastProps) {
         <span className="font-semibold text-red-400">{alert.vehicle_id}</span>
       </div>
       <ul className="mt-1 text-sm text-red-200">
-        {alert.anomaly_types.map((t, i) => (
+        {translatedTypes.map((t, i) => (
           <li key={i}>{t}</li>
         ))}
       </ul>

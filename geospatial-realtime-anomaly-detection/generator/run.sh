@@ -1,12 +1,4 @@
 #!/bin/bash
-set -e
+# Wrapper: เรียก shared script
 cd "$(dirname "$0")"
-
-# สร้าง venv และติดตั้ง dependencies ถ้ายังไม่มี
-if [ ! -d ".venv" ]; then
-  echo "Creating virtual environment..."
-  python3 -m venv .venv
-fi
-.venv/bin/pip3 install -q -r requirements.txt
-
-.venv/bin/python3 main.py
+exec ../scripts/run-python.sh generator

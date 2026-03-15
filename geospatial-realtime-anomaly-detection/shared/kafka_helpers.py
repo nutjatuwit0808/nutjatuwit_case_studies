@@ -1,11 +1,21 @@
-"""Shared Kafka helpers: producer/consumer creation and message parsing."""
+"""Shared Kafka helpers: producer/consumer creation และ message parsing."""
 import json
 from confluent_kafka import Consumer, Producer
 
 
-def create_producer(bootstrap_servers: str, **kwargs) -> Producer:
-    """Create a Kafka producer with common defaults."""
-    config = {"bootstrap.servers": bootstrap_servers, **kwargs}
+def create_producer(
+    bootstrap_servers: str,
+    acks: str = "all",
+    retries: int = 3,
+    **kwargs,
+) -> Producer:
+    """Create Kafka producer with common defaults."""
+    config = {
+        "bootstrap.servers": bootstrap_servers,
+        "acks": acks,
+        "retries": retries,
+        **kwargs,
+    }
     return Producer(config)
 
 
@@ -14,7 +24,7 @@ def create_consumer(
     group_id: str,
     auto_offset_reset: str = "latest",
 ) -> Consumer:
-    """Create a Kafka consumer with common defaults."""
+    """Create Kafka consumer with common defaults."""
     return Consumer({
         "bootstrap.servers": bootstrap_servers,
         "group.id": group_id,

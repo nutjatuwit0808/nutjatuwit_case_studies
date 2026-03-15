@@ -78,3 +78,21 @@ case-study-name/
 - **shared/** — pure functions/constants ที่ใช้ข้าม api และ data_prep (DRY)
 - **api/models.py** — Pydantic models แยกจาก main
 - **api/config.py** — constants แยกจาก business logic
+
+## โครงสร้าง Geo-Stream (geospatial-realtime-anomaly-detection/)
+
+สำหรับ case study Event-Driven + Real-time Anomaly Detection:
+
+| โฟลเดอร์/ไฟล์ | หน้าที่ |
+|----------------|--------|
+| `shared/` | Python config และ kafka_helpers ที่ใช้ร่วมกัน ai-service และ generator |
+| `dashboard/` | Next.js App Router — map, alerts, WebSocket |
+| `ai-service/` | Python Kafka consumer + anomaly detector → producer |
+| `generator/` | Python mock GPS producer |
+| `gateway/` | NestJS WebSocket gateway (Kafka → Socket.IO) |
+| `scripts/` | run-python.sh สำหรับรัน ai-service หรือ generator (ลด duplication ของ run.sh) |
+
+### หลักการจัดไฟล์ใน Geo-Stream
+- **shared/** — KAFKA_BROKERS, TOPIC_GPS, TOPIC_ALERTS, create_producer, create_consumer, parse_json_message
+- **dashboard/lib/** — alert-helpers, anomaly-translations, marker-helpers, map-config, constants
+- **dashboard/hooks/** — useWebSocket, useMapboxMap

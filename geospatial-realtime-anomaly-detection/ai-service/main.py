@@ -8,7 +8,7 @@ import time
 from config import KAFKA_BROKERS, TOPIC_GPS, TOPIC_ALERTS, WINDOW_SIZE
 from config import SPATIAL_JUMP_KM, SPEED_LIMIT_KMH, IDLING_MINUTES
 from anomaly_detector import AnomalyDetector
-from lib.kafka_helpers import create_consumer, create_producer, parse_json_message
+from shared.kafka_helpers import create_consumer, create_producer, parse_json_message
 
 
 def _build_alert_payload(
@@ -68,6 +68,8 @@ def main():
                     continue
 
                 alerts = detector.check_anomalies(vehicle_id, lat, lng, speed, timestamp)
+                # ไม่แสดง alert ถ้าเป็นกรณี "ml: isolation forest outlier"
+                alerts = [a for a in alerts if a != "ml: isolation forest outlier"]
 
                 if alerts:
                     alert_payload = _build_alert_payload(

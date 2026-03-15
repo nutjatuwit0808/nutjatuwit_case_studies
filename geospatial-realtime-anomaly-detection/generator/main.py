@@ -7,8 +7,6 @@ import json
 import random
 import time
 
-from confluent_kafka import Producer
-
 from config import (
     KAFKA_BROKERS,
     TOPIC_GPS,
@@ -24,14 +22,7 @@ from config import (
     SPEED_ANOMALY_MIN,
     SPEED_ANOMALY_MAX,
 )
-
-
-def create_producer():
-    return Producer({
-        "bootstrap.servers": KAFKA_BROKERS,
-        "acks": "all",
-        "retries": 3,
-    })
+from shared.kafka_helpers import create_producer
 
 
 def generate_gps_ping(vehicle_id: str, lat: float, lng: float, speed: float) -> dict:
@@ -63,7 +54,7 @@ def main():
     print(f"Generator starting: {VEHICLE_COUNT} vehicles, interval {INTERVAL_SEC}s")
     print(f"Kafka brokers: {KAFKA_BROKERS}")
 
-    producer = create_producer()
+    producer = create_producer(KAFKA_BROKERS)
     vehicle_states = {}
     for i in range(1, VEHICLE_COUNT + 1):
         vid = f"TRK-{i:03d}"

@@ -1,19 +1,23 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useMemo } from "react";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { AlertToast } from "@/components/AlertToast";
 import { ConnectionStatus } from "@/components/ConnectionStatus";
 import { DEFAULT_WS_URL } from "@/lib/constants";
+import { buildAlertedAlertsMap } from "@/lib/alert-helpers";
 
-const VehicleMap = dynamic(
-  () => import("@/components/VehicleMap").then((m) => ({ default: m.VehicleMap })),
-  { ssr: false }
-);
+const VehicleMap = dynamic(() => import("@/components/VehicleMap"), { ssr: false });
 
 export default function DashboardPage() {
   const wsUrl = process.env.NEXT_PUBLIC_WS_URL || DEFAULT_WS_URL;
   const { connected, vehicles, alerts, alertedIds } = useWebSocket(wsUrl);
+
+  const alertedAlerts = useMemo(
+    () => buildAlertedAlertsMap(alertedIds, alerts),
+    [alertedIds, alerts]
+  );
 
   return (
     <div className="flex h-screen flex-col bg-slate-900 text-slate-100">
@@ -24,7 +28,7 @@ export default function DashboardPage() {
 
       <div className="relative flex flex-1 overflow-hidden">
         <main className="flex-1">
-          <VehicleMap vehicles={vehicles} alertedIds={alertedIds} />
+          <VehicleMap vehicles={vehicles} alertedIds={alertedIds} alertedAlerts={alertedAlerts} />
         </main>
 
         <aside className="w-80 shrink-0 overflow-y-auto border-l border-slate-700 bg-slate-900/50 p-4">

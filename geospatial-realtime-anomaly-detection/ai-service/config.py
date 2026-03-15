@@ -1,8 +1,10 @@
-import os
+import sys
+from pathlib import Path
 
-KAFKA_BROKERS = os.getenv("KAFKA_BROKERS", "localhost:9092")
-TOPIC_GPS = "vehicle-gps-stream"
-TOPIC_ALERTS = "vehicle-alerts"
+# เพิ่ม project root เพื่อ import shared
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from shared.config import KAFKA_BROKERS, TOPIC_GPS, TOPIC_ALERTS
 
 # Sliding window
 WINDOW_SIZE = 10

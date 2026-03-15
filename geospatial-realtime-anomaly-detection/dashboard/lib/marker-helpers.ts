@@ -9,7 +9,11 @@ const MARKER_INNER_CLASS =
 /**
  * สร้าง DOM element สำหรับ vehicle marker บนแผนที่
  */
-export function createVehicleMarkerElement(isAlerted: boolean): HTMLDivElement {
+export function createVehicleMarkerElement(
+  isAlerted: boolean,
+  tooltipText?: string,
+  vehicleId?: string
+): HTMLDivElement {
   const el = document.createElement("div");
   el.className = MARKER_BASE_CLASS;
   el.innerHTML = `
@@ -18,13 +22,22 @@ export function createVehicleMarkerElement(isAlerted: boolean): HTMLDivElement {
     </div>
   `;
   if (isAlerted) el.classList.add("animate-pulse");
+  if (vehicleId) el.setAttribute("data-vehicle-id", vehicleId);
+  if (isAlerted && tooltipText) {
+    el.setAttribute("data-tooltip", tooltipText);
+    el.style.cursor = "pointer";
+  }
   return el;
 }
 
 /**
  * อัปเดตสีและ animation ของ marker ตามสถานะ alerted
  */
-export function updateMarkerStyle(marker: Marker, isAlerted: boolean): void {
+export function updateMarkerStyle(
+  marker: Marker,
+  isAlerted: boolean,
+  tooltipText?: string
+): void {
   const el = marker.getElement();
   const dot = el?.querySelector("div");
   if (!dot) return;
@@ -33,4 +46,13 @@ export function updateMarkerStyle(marker: Marker, isAlerted: boolean): void {
     ? MARKER_COLOR.alerted
     : MARKER_COLOR.normal;
   isAlerted ? el?.classList.add("animate-pulse") : el?.classList.remove("animate-pulse");
+  if (el) {
+    if (isAlerted && tooltipText) {
+      el.setAttribute("data-tooltip", tooltipText);
+      el.style.cursor = "pointer";
+    } else {
+      el.removeAttribute("data-tooltip");
+      el.style.cursor = "";
+    }
+  }
 }

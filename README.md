@@ -30,8 +30,8 @@ Here is a curated list of architectural challenges and optimizations I have engi
 
 ### 4. [Geo-Stream: Real-time Anomaly Detection](./geospatial-realtime-anomaly-detection)
 **Domain:** GIS / Event-Driven / AI / Real-time
-**คำอธิบาย:** ระบบตรวจจับความผิดปกติของพิกัด GPS รถบรรทุกแบบ Real-time ด้วย Event-Driven Architecture (Kafka, Python AI, NestJS, Next.js + Mapbox)
-**Tech:** Python, Apache Kafka, scikit-learn, NestJS, Next.js 16, Mapbox GL JS, Socket.IO
+**คำอธิบาย:** ระบบตรวจจับความผิดปกติของพิกัด GPS รถบรรทุกแบบ Real-time ด้วย Event-Driven Architecture (Kafka, Python AI, NestJS, Next.js + Mapbox) มี shared config และ kafka helpers สำหรับ ai-service และ generator
+**Tech:** Python, confluent-kafka, Apache Kafka, scikit-learn, NestJS, Next.js 16, Mapbox GL JS, Socket.IO
 
 ### 5. [Fleet MVT: Dynamic MVT Engine for Fleet Telematics](./geospatial-realtime-fleet-telematics)
 **Domain:** GIS / Real-time / Vector Tiles

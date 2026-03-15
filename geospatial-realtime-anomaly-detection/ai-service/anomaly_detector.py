@@ -1,11 +1,9 @@
 """
-Anomaly detector: Sliding window + Isolation Forest + rule-based (speed, idling).
+Anomaly detector: ดักจับแค่กรณีความเร็วเกินกำหนดเท่านั้น (มองข้าม spatial, idling, ml).
 """
 import math
 from collections import deque
 from dataclasses import dataclass
-import numpy as np
-from sklearn.ensemble import IsolationForest
 
 
 def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
@@ -41,7 +39,6 @@ class AnomalyDetector:
         self.speed_limit_kmh = speed_limit_kmh
         self.idling_minutes = idling_minutes
         self._windows: dict[str, deque[GpsPoint]] = {}
-        self._fitted: dict[str, IsolationForest] = {}
 
     def _get_window(self, vehicle_id: str) -> deque[GpsPoint]:
         if vehicle_id not in self._windows:
@@ -85,20 +82,5 @@ class AnomalyDetector:
                 if total_dist < 0.1:  # < 100m total movement
                     alerts.append(f"idling: stationary {duration_min:.0f} min")
 
-        # Isolation Forest on window features (lat, lng, speed)
-        if len(window) >= self.window_size:
-            X = np.array(
-                [[p.lat, p.lng, p.speed] for p in window],
-                dtype=np.float64,
-            )
-            if vehicle_id not in self._fitted:
-                self._fitted[vehicle_id] = IsolationForest(
-                    contamination=0.1, random_state=42, n_estimators=50
-                )
-                self._fitted[vehicle_id].fit(X)
-            model = self._fitted[vehicle_id]
-            pred = model.predict(X[-1:])
-            if pred[0] == -1:
-                alerts.append("ml: isolation forest outlier")
-
-        return alerts
+        # ดักจับแค่กรณีความเร็วเกินกำหนดเท่านั้น (มองข้าม spatial, idling, ml)
+        return [a for a in alerts if a.startswith("speed:")]
