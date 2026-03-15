@@ -6,26 +6,29 @@ const MVT_SQL = `
 WITH bounds AS (
     SELECT ST_TileEnvelope($1::int, $2::int, $3::int) AS geom
 ),
+raw_fractions AS (
+    SELECT
+        vehicle_id,
+        metadata,
+        route_geom,
+        (EXTRACT(EPOCH FROM (NOW() - start_time)) / 3600.0 * speed_kmh * 1000.0)
+        / NULLIF(ST_Length(route_geom::geography), 0) AS raw
+    FROM fleet_routes
+    WHERE route_geom && ST_Transform((SELECT geom FROM bounds), 4326)
+),
 route_fractions AS (
     SELECT
         vehicle_id,
         metadata,
         route_geom,
-        LEAST(
-            GREATEST(
-                (EXTRACT(EPOCH FROM (NOW() - start_time)) / 3600.0 * speed_kmh * 1000.0)
-                / NULLIF(ST_Length(route_geom::geography), 0),
-                0.0
-            ),
-            1.0
-        ) AS fraction
-    FROM fleet_routes
-    WHERE route_geom && ST_Transform((SELECT geom FROM bounds), 4326)
+        (raw - floor(raw))::double precision AS fraction
+    FROM raw_fractions
 ),
 interpolated_points AS (
     SELECT
         vehicle_id,
         metadata,
+        COALESCE(metadata->>'type', 'car') AS vehicle_type,
         ST_LineInterpolatePoint(route_geom, fraction) AS current_point_4326,
         degrees(
             ST_Azimuth(
@@ -39,6 +42,7 @@ mvt_geoms AS (
     SELECT
         vehicle_id,
         metadata,
+        vehicle_type,
         bearing,
         ST_AsMVTGeom(
             ST_Transform(current_point_4326, 3857),

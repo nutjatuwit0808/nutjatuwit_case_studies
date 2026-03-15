@@ -22,12 +22,17 @@ export function getFleetTilesUrl(): string {
   return `${base}/api/tiles/fleet/{z}/{x}/{y}.pbf?t=${ts}`;
 }
 
-/** ID ของ icon สำหรับ fleet symbol layer */
-export const FLEET_ICON_ID = "fleet-truck";
-
-/** Layout สำหรับ fleet symbol layer (ใช้ SVG truck icon) */
+/** Layout สำหรับ fleet symbol layer (icon ตาม vehicle_type) */
 export const FLEET_LAYER_LAYOUT = {
-  "icon-image": FLEET_ICON_ID,
+  "icon-image": [
+    "match",
+    ["get", "vehicle_type"],
+    "truck",
+    "fleet-truck",
+    "car",
+    "fleet-car",
+    "fleet-car",
+  ],
   "icon-size": 1,
   "icon-allow-overlap": true,
   "icon-ignore-placement": true,
@@ -36,15 +41,18 @@ export const FLEET_LAYER_LAYOUT = {
   "icon-rotation-alignment": "map",
 } as const;
 
-/** โหลด fleet truck SVG เป็น image แล้ว add ลง map (Mapbox ไม่รองรับ SVG โดยตรง ต้อง render ผ่าน canvas) */
-export function loadFleetIcon(map: MapboxMap): Promise<void> {
-  if (map.hasImage(FLEET_ICON_ID)) return Promise.resolve();
+function loadSvgAsMapImage(
+  map: MapboxMap,
+  id: string,
+  src: string,
+  w: number,
+  h: number
+): Promise<void> {
+  if (map.hasImage(id)) return Promise.resolve();
 
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const w = 40;
-      const h = 60;
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
@@ -55,10 +63,19 @@ export function loadFleetIcon(map: MapboxMap): Promise<void> {
       }
       ctx.drawImage(img, 0, 0, w, h);
       const imageData = ctx.getImageData(0, 0, w, h);
-      map.addImage(FLEET_ICON_ID, imageData, { pixelRatio: 2 });
+      map.addImage(id, imageData, { pixelRatio: 2 });
       resolve();
     };
-    img.onerror = () => reject(new Error("Failed to load fleet icon"));
-    img.src = "/fleet-truck.svg";
+    img.onerror = () => reject(new Error(`Failed to load ${src}`));
+    img.src = src;
   });
+}
+
+/** โหลด fleet icons (truck, car) เป็น image ลง map */
+export function loadFleetIcons(map: MapboxMap): Promise<void> {
+  const size = { w: 40, h: 60 };
+  return Promise.all([
+    loadSvgAsMapImage(map, "fleet-truck", "/fleet-truck.svg", size.w, size.h),
+    loadSvgAsMapImage(map, "fleet-car", "/fleet-car.svg", size.w, size.h),
+  ]).then(() => {});
 }

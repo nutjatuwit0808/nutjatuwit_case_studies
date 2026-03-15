@@ -10,7 +10,7 @@ import {
   FLEET_SOURCE_ID,
   FLEET_SOURCE_LAYER,
   getFleetTilesUrl,
-  loadFleetIcon,
+  loadFleetIcons,
 } from "@/lib/fleet-config";
 import { MapErrorOverlay } from "./MapErrorOverlay";
 
@@ -43,7 +43,7 @@ export function FleetMap() {
 
   const onLoad = useCallback(
     async (map: mapboxgl.Map) => {
-      await loadFleetIcon(map);
+      await loadFleetIcons(map);
       refreshSource(map);
 
       intervalRef.current = setInterval(() => {
