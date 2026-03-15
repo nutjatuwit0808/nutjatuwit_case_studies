@@ -172,9 +172,9 @@ flowchart LR
     end
 
     subgraph API
-        RAG_API[/api/search/rag]
-        EMBED_API[/api/venues/embed]
-        SEED_API[/api/seed]
+        RAG_API["/api/search/rag"]
+        EMBED_API["/api/venues/embed"]
+        SEED_API["/api/seed"]
     end
 
     subgraph Lib
@@ -188,7 +188,7 @@ flowchart LR
     subgraph External
         MAPBOX[Mapbox API]
         GEMINI[Google Gemini]
-        SUPABASE[(Supabase/PostgreSQL)]
+        SUPABASE["Supabase/PostgreSQL"]
     end
 
     UI --> RAG_API
@@ -251,6 +251,29 @@ cp .env.example .env.local
 5. Copy เนื้อหาจาก `supabase/migrations/003_fix_geo_semantic_search.sql` แล้ว Execute
 6. ถ้า seed แล้ว error "Could not find the function" ให้รอ 10–30 วินาที หรือกด Reload ใน Project Settings → API
 
+#### โครงสร้าง supabase/migrations และ Table venues
+
+| ไฟล์ | รายละเอียด |
+|------|-------------|
+| `001_venues.sql` | สร้าง extensions (PostGIS, pgvector, uuid-ossp), ตาราง `venues`, indexes (GIST สำหรับ location, HNSW สำหรับ embedding), และฟังก์ชัน `geo_semantic_search` |
+| `002_insert_venue.sql` | สร้าง RPC `insert_venue` สำหรับ insert ข้อมูล (เพราะ Supabase REST API ไม่รองรับ geography และ vector โดยตรง) |
+| `003_fix_geo_semantic_search.sql` | แก้ไข `geo_semantic_search` ให้กรอง venues ที่ `embedding IS NOT NULL` และ cast ค่า return ให้ถูกต้อง |
+
+**โครงสร้างตาราง `venues`:**
+
+| คอลัมน์ | ประเภท | คำอธิบาย |
+|---------|--------|----------|
+| `id` | UUID | Primary key, สร้างอัตโนมัติ |
+| `name` | TEXT | ชื่อสถานที่ |
+| `description` | TEXT | คำอธิบาย (ใช้ร่วมกับ name สำหรับสร้าง embedding) |
+| `category` | TEXT | หมวดหมู่ (เช่น cafe, restaurant) |
+| `location` | geography(Point, 4326) | ตำแหน่ง lat/lng (WGS84) สำหรับ PostGIS |
+| `embedding` | vector(768) | Vector จาก Google Gemini สำหรับ semantic search |
+| `metadata` | JSONB | ข้อมูลเพิ่มเติม (default `{}`) |
+| `created_at` | TIMESTAMPTZ | เวลาที่สร้าง |
+
+**Indexes:** `idx_venues_location` (GIST สำหรับ spatial query), `idx_venues_embedding` (HNSW สำหรับ vector similarity)
+
 ### 3. Seed Data
 
 **วิธีที่ 1:** รัน script
@@ -266,6 +289,22 @@ curl -X POST http://localhost:3000/api/seed
 ```
 
 หรือ insert venues เองแล้วเรียก `POST /api/venues/embed` เพื่อ generate embedding
+
+#### รายละเอียด Seed Script
+
+Seed script ใช้ข้อมูลจาก `data/seed-venues.ts` (100 ร้านคาเฟ่ตัวอย่างในพื้นที่กรุงเทพ ~5km จากสยาม) และทำดังนี้:
+
+1. **สำหรับแต่ละ venue** — รวม `name` + `description` เป็นข้อความ → ส่งไป `embedDocument()` (Google Gemini) → ได้ vector 768 มิติ
+2. **Insert ลง DB** — เรียก RPC `insert_venue` พร้อม `p_name`, `p_description`, `p_category`, `p_lng`, `p_lat`, `p_embedding`
+
+**วิธีรัน Seed:**
+
+| วิธี | คำสั่ง/Endpoint | ใช้เมื่อ |
+|------|-----------------|----------|
+| Script | `npm run seed` | รัน standalone (ใช้ `scripts/seed-venues.ts` โหลด `.env.local` ผ่าน dotenv) |
+| API | `POST /api/seed` | รันเมื่อ Next.js dev server ทำงานอยู่ (ใช้ `app/api/seed/route.ts`) |
+
+**ความต้องการ:** `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_AI_API_KEY` (หรือ `GEMINI_API_KEY`)
 
 ### 4. Run Dev Server
 
