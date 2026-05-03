@@ -1,0 +1,30 @@
+{
+  "name": "@ai-obsidian/backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "seed:vault": "tsx src/scripts/seed-vault.ts"
+  },
+  "dependencies": {
+    "@ai-obsidian/obsidian-adapter": "*",
+    "@ai-obsidian/shared": "*",
+    "@langchain/core": "latest",
+    "@langchain/google-genai": "latest",
+    "@nestjs/common": "latest",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "latest",
+    "@nestjs/platform-express": "latest",
+    "reflect-metadata": "latest",
+    "rxjs": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}

@@ -1,0 +1,210 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  background: #0b1020;
+  color: #f0f3ff;
+}
+
+main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+input,
+button,
+textarea {
+  font: inherit;
+}
+
+.card {
+  background: #151b30;
+  border: 1px solid #2c365d;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.row input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #344172;
+  background: #0c1224;
+  color: #f0f3ff;
+}
+
+button {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #5b8cff;
+  color: #fff;
+}
+
+.chip-btn {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  background: #1e2844;
+  color: #c8d4f8;
+  border: 1px solid #344172;
+}
+
+.chip-btn:hover {
+  background: #263256;
+  color: #f0f3ff;
+}
+
+.sample-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sample-questions-hint {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: #8b95b8;
+  line-height: 1.45;
+}
+
+pre {
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.answer-empty {
+  margin: 0;
+  color: #8b95b8;
+  line-height: 1.5;
+}
+
+.answer-markdown {
+  line-height: 1.55;
+  color: #e8ecff;
+}
+
+.answer-markdown > :first-child {
+  margin-top: 0;
+}
+
+.answer-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.answer-markdown h1,
+.answer-markdown h2,
+.answer-markdown h3 {
+  margin: 1em 0 0.4em;
+  font-weight: 600;
+  color: #f0f3ff;
+}
+
+.answer-markdown h1 {
+  font-size: 1.35rem;
+}
+
+.answer-markdown h2 {
+  font-size: 1.2rem;
+}
+
+.answer-markdown h3 {
+  font-size: 1.05rem;
+}
+
+.answer-markdown p {
+  margin: 0.65em 0;
+}
+
+.answer-markdown ul,
+.answer-markdown ol {
+  margin: 0.65em 0;
+  padding-left: 1.35em;
+}
+
+.answer-markdown li {
+  margin: 0.25em 0;
+}
+
+.answer-markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.15em 0.4em;
+  border-radius: 6px;
+  background: #0c1224;
+  border: 1px solid #2c365d;
+}
+
+.answer-markdown pre {
+  margin: 0.75em 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #0c1224;
+  border: 1px solid #2c365d;
+  overflow-x: auto;
+}
+
+.answer-markdown pre code {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 0.85em;
+}
+
+.answer-markdown blockquote {
+  margin: 0.75em 0;
+  padding: 0.35em 0 0.35em 1em;
+  border-left: 3px solid #5b8cff;
+  color: #c8d0f0;
+}
+
+.answer-markdown a {
+  color: #5b8cff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.answer-markdown a:hover {
+  color: #8eb4ff;
+}
+
+.answer-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+  font-size: 0.92rem;
+}
+
+.answer-markdown th,
+.answer-markdown td {
+  border: 1px solid #2c365d;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.answer-markdown th {
+  background: #0c1224;
+  font-weight: 600;
+}
+
+.answer-markdown tr:nth-child(even) td {
+  background: rgba(12, 18, 36, 0.45);
+}
+
+.answer-markdown hr {
+  border: none;
+  border-top: 1px solid #2c365d;
+  margin: 1.25em 0;
+}

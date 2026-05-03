@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "../../",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node"],
+    "paths": {
+      "@ai-obsidian/shared": ["../../packages/shared/src/index.ts"],
+      "@ai-obsidian/obsidian-adapter": ["../../packages/obsidian-adapter/src/index.ts"]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

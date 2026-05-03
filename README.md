@@ -48,6 +48,11 @@ Here is a curated list of architectural challenges and optimizations I have engi
 **คำอธิบาย:** ระบบ Text-to-SQL รองรับสองภาษา (ไทย/อังกฤษ) LoRA fine-tune บน Apple Silicon (M2 Pro) พร้อม SQL injection guardrail (sqlparse) และ read-only database pipeline: Context Injection → LLM → Guardrail → Execute → Self-Correction
 **Tech:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Python, FastAPI, MLX, mlx-lm, psycopg2, sqlparse, Pydantic, Hugging Face datasets, deep-translator, PostgreSQL/Supabase
 
+### 8. [AI Obsidian: Local Knowledge Assistant for Vault Notes](./ai-obsidian)
+**Domain:** AI / RAG / Knowledge Management
+**คำอธิบาย:** ผู้ช่วยถาม-ตอบจากโน้ตใน Obsidian Vault: ingest Markdown จากดิสก์ (glob + gray-matter) แบ่ง chunk เก็บ in-memory แล้วค้นหาแบบ lexical overlap (ไม่ใช้ embedding/vector DB ใน workshop นี้); สร้าง context พร้อม citation (path/chunk id) และตอบ/สรุปด้วย Google Gemini ผ่าน LangChain ChatGoogleGenerativeAI และ NestJS JSON API
+**Tech:** Next.js, React, NestJS, TypeScript, npm workspaces, LangChain (Google GenAI), Google Gemini, Zod, gray-matter, workspace packages (shared, obsidian-adapter)
+
 ---
 
 ## 🛠️ Core Technology Stack Demonstrated Here
@@ -57,7 +62,7 @@ Here is a curated list of architectural challenges and optimizations I have engi
 * **Geospatial:** GeoJSON, PMTiles, mapbox-pmtiles, GeoPandas, tippecanoe, PostGIS, pgvector
 * **Data Processing:** pandas, numpy, pyarrow, GeoJSON manipulation
 * **Backend:** Node.js, Next.js API Routes, NestJS, FastAPI
-* **AI / LLM:** LangChain, Ollama, Typhoon API, Google Gemini Embeddings, RAG, Multi-Agent Systems, MLX, mlx-lm, Text-to-SQL
+* **AI / LLM:** LangChain, LangGraph, Ollama, Typhoon API, Google Gemini Embeddings, RAG, Multi-Agent Systems, MLX, mlx-lm, Text-to-SQL
 * **Validation / Schema:** Zod, Pydantic, sqlparse
 * **Event-Driven:** Apache Kafka, Socket.IO
 

@@ -1,0 +1,21 @@
+{
+  "name": "ai-obsidian",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @ai-obsidian/backend & npm run dev -w @ai-obsidian/frontend",
+    "dev:frontend": "npm run dev -w @ai-obsidian/frontend",
+    "dev:backend": "npm run dev -w @ai-obsidian/backend",
+    "build": "npm run build -w @ai-obsidian/shared && npm run build -w @ai-obsidian/obsidian-adapter && npm run build -w @ai-obsidian/backend && npm run build -w @ai-obsidian/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "seed:vault": "npm run seed:vault -w @ai-obsidian/backend"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
